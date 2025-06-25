@@ -84,35 +84,39 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
           child: AnimatedOpacity(
             opacity: widget.transparency,
             duration: const Duration(milliseconds: 200),
-            child: Container(
-              constraints: const BoxConstraints(
-                maxWidth: 200,
-                maxHeight: 300,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: _isDragging ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ] : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  TrafficLightWidget(
-                    state: widget.trafficLightState,
-                    isMinimalistic: widget.isMinimalistic,
-                    showCountdown: !widget.isMinimalistic,
-                    showSigns: !widget.isMinimalistic,
-                  ),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 200,
+                  maxHeight: 300,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: _isDragging ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ] : [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 5,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: TrafficLightWidget(
+                        state: widget.trafficLightState,
+                        isMinimalistic: widget.isMinimalistic,
+                        showCountdown: !widget.isMinimalistic,
+                        showSigns: !widget.isMinimalistic,
+                      ),
+                    ),
                   if (_isDragging)
                     Positioned(
                       top: 4,
@@ -130,7 +134,8 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
                         ),
                       ),
                     ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
