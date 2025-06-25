@@ -7,6 +7,7 @@ import 'services/connection_service.dart';
 import 'services/notification_service.dart';
 import 'services/event_log_service.dart';
 import 'screens/main_screen.dart';
+import 'screens/splash_screen.dart';
 import 'models/app_settings.dart';
 import 'l10n/app_localizations.dart';
 
@@ -85,7 +86,7 @@ class TrafficLightApp extends StatelessWidget {
               Locale('ru', ''),
               Locale('pl', ''),
             ],
-            home: const MainScreen(),
+            home: const SplashScreen(),
           );
         },
       ),
