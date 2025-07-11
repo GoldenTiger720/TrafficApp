@@ -163,6 +163,361 @@ class AppLocalizations {
     'pl': 'Powiadomienia wibracjami',
   });
 
+  // Appearance
+  String get appearance => _localizedString('appearance', {
+    'en': 'Appearance',
+    'ru': 'Внешний вид',
+    'pl': 'Wygląd',
+  });
+
+  String get theme => _localizedString('theme', {
+    'en': 'Theme',
+    'ru': 'Тема',
+    'pl': 'Motyw',
+  });
+
+  String get light => _localizedString('light', {
+    'en': 'Light',
+    'ru': 'Светлая',
+    'pl': 'Jasny',
+  });
+
+  String get dark => _localizedString('dark', {
+    'en': 'Dark',
+    'ru': 'Тёмная',
+    'pl': 'Ciemny',
+  });
+
+  String get system => _localizedString('system', {
+    'en': 'System',
+    'ru': 'Системная',
+    'pl': 'Systemowy',
+  });
+
+  String get language => _localizedString('language', {
+    'en': 'Language',
+    'ru': 'Язык',
+    'pl': 'Język',
+  });
+
+  String get displayMode => _localizedString('display_mode', {
+    'en': 'Display Mode',
+    'ru': 'Режим отображения',
+    'pl': 'Tryb wyświetlania',
+  });
+
+  String get minimalistic => _localizedString('minimalistic', {
+    'en': 'Minimalistic',
+    'ru': 'Минималистичный',
+    'pl': 'Minimalistyczny',
+  });
+
+  String get advanced => _localizedString('advanced', {
+    'en': 'Advanced',
+    'ru': 'Расширенный',
+    'pl': 'Zaawansowany',
+  });
+
+  // Developer Options
+  String get developerOptions => _localizedString('developer_options', {
+    'en': 'Developer Options',
+    'ru': 'Параметры разработчика',
+    'pl': 'Opcje programisty',
+  });
+
+  String get manualOverlayTest => _localizedString('manual_overlay_test', {
+    'en': 'Manual Overlay Test',
+    'ru': 'Ручной тест наложения',
+    'pl': 'Ręczny test nakładki',
+  });
+
+  String get testOverlayColors => _localizedString('test_overlay_colors', {
+    'en': 'Test overlay colors manually',
+    'ru': 'Тестировать цвета наложения вручную',
+    'pl': 'Testuj kolory nakładki ręcznie',
+  });
+
+  // Data & Privacy
+  String get dataPrivacy => _localizedString('data_privacy', {
+    'en': 'Data & Privacy',
+    'ru': 'Данные и конфиденциальность',
+    'pl': 'Dane i prywatność',
+  });
+
+  String get exportEventLog => _localizedString('export_event_log', {
+    'en': 'Export Event Log',
+    'ru': 'Экспорт журнала событий',
+    'pl': 'Eksportuj dziennik zdarzeń',
+  });
+
+  String get shareEventLogForDebugging => _localizedString('share_event_log_for_debugging', {
+    'en': 'Share event log for debugging',
+    'ru': 'Поделиться журналом событий для отладки',
+    'pl': 'Udostępnij dziennik zdarzeń do debugowania',
+  });
+
+  String get clearEventLog => _localizedString('clear_event_log', {
+    'en': 'Clear Event Log',
+    'ru': 'Очистить журнал событий',
+    'pl': 'Wyczyść dziennik zdarzeń',
+  });
+
+  String get deleteAllLoggedEvents => _localizedString('delete_all_logged_events', {
+    'en': 'Delete all logged events',
+    'ru': 'Удалить все записанные события',
+    'pl': 'Usuń wszystkie zapisane zdarzenia',
+  });
+
+  // Connection
+  String get availableDevices => _localizedString('available_devices', {
+    'en': 'Available Devices',
+    'ru': 'Доступные устройства',
+    'pl': 'Dostępne urządzenia',
+  });
+
+  String get scanning => _localizedString('scanning', {
+    'en': 'Scanning...',
+    'ru': 'Сканирование...',
+    'pl': 'Skanowanie...',
+  });
+
+  String devicesFound(int count) => _localizedString('devices_found', {
+    'en': '$count devices found',
+    'ru': 'Найдено устройств: $count',
+    'pl': 'Znaleziono urządzeń: $count',
+  });
+
+  String get testConnection => _localizedString('test_connection', {
+    'en': 'Test Connection',
+    'ru': 'Проверить подключение',
+    'pl': 'Testuj połączenie',
+  });
+
+  String get test => _localizedString('test', {
+    'en': 'Test',
+    'ru': 'Тест',
+    'pl': 'Test',
+  });
+
+  String get reset => _localizedString('reset', {
+    'en': 'Reset',
+    'ru': 'Сбросить',
+    'pl': 'Resetuj',
+  });
+
+  String get moveOverlayToCenter => _localizedString('move_overlay_to_center', {
+    'en': 'Move overlay to center',
+    'ru': 'Переместить наложение в центр',
+    'pl': 'Przenieś nakładkę do środka',
+  });
+
+  // Dialog messages
+  String get pleaseSelectDeviceFirst => _localizedString('please_select_device_first', {
+    'en': 'Please select a device first',
+    'ru': 'Сначала выберите устройство',
+    'pl': 'Najpierw wybierz urządzenie',
+  });
+
+  String get connectionSuccessful => _localizedString('connection_successful', {
+    'en': 'Connection successful!',
+    'ru': 'Подключение успешно!',
+    'pl': 'Połączenie udane!',
+  });
+
+  String get connectionFailed => _localizedString('connection_failed', {
+    'en': 'Connection failed',
+    'ru': 'Подключение не удалось',
+    'pl': 'Połączenie nieudane',
+  });
+
+  String connectionError(String error) => _localizedString('connection_error', {
+    'en': 'Connection error: $error',
+    'ru': 'Ошибка подключения: $error',
+    'pl': 'Błąd połączenia: $error',
+  });
+
+  String get eventLogExportedSuccessfully => _localizedString('event_log_exported_successfully', {
+    'en': 'Event log exported successfully',
+    'ru': 'Журнал событий успешно экспортирован',
+    'pl': 'Dziennik zdarzeń wyeksportowany pomyślnie',
+  });
+
+  String exportFailed(String error) => _localizedString('export_failed', {
+    'en': 'Export failed: $error',
+    'ru': 'Экспорт не удался: $error',
+    'pl': 'Eksport nieudany: $error',
+  });
+
+  String get clearEventLogConfirm => _localizedString('clear_event_log_confirm', {
+    'en': 'This will permanently delete all logged events. Continue?',
+    'ru': 'Это навсегда удалит все записанные события. Продолжить?',
+    'pl': 'To trwale usunie wszystkie zapisane zdarzenia. Kontynuować?',
+  });
+
+  String get cancel => _localizedString('cancel', {
+    'en': 'Cancel',
+    'ru': 'Отмена',
+    'pl': 'Anuluj',
+  });
+
+  String get clear => _localizedString('clear', {
+    'en': 'Clear',
+    'ru': 'Очистить',
+    'pl': 'Wyczyść',
+  });
+
+  String get eventLogCleared => _localizedString('event_log_cleared', {
+    'en': 'Event log cleared',
+    'ru': 'Журнал событий очищен',
+    'pl': 'Dziennik zdarzeń wyczyszczony',
+  });
+
+  String errorScanningForDevices(String error) => _localizedString('error_scanning_for_devices', {
+    'en': 'Error scanning for devices: $error',
+    'ru': 'Ошибка сканирования устройств: $error',
+    'pl': 'Błąd skanowania urządzeń: $error',
+  });
+
+  // Main Screen
+  String get deviceConnected => _localizedString('device_connected', {
+    'en': 'Device Connected',
+    'ru': 'Устройство подключено',
+    'pl': 'Urządzenie połączone',
+  });
+
+  String get deviceDisconnected => _localizedString('device_disconnected', {
+    'en': 'Device Disconnected',
+    'ru': 'Устройство отключено',
+    'pl': 'Urządzenie rozłączone',
+  });
+
+  String get lastUpdated => _localizedString('last_updated', {
+    'en': 'Last updated',
+    'ru': 'Последнее обновление',
+    'pl': 'Ostatnia aktualizacja',
+  });
+
+  String get demoModeControls => _localizedString('demo_mode_controls', {
+    'en': 'Demo Mode Controls',
+    'ru': 'Управление демо режимом',
+    'pl': 'Kontrola trybu demo',
+  });
+
+  String get testOverlayColorsShort => _localizedString('test_overlay_colors_short', {
+    'en': 'Test overlay colors:',
+    'ru': 'Тестировать цвета наложения:',
+    'pl': 'Testuj kolory nakładki:',
+  });
+
+  String get currentStatus => _localizedString('current_status', {
+    'en': 'Current Status',
+    'ru': 'Текущий статус',
+    'pl': 'Aktualny status',
+  });
+
+  String get signalColor => _localizedString('signal_color', {
+    'en': 'Signal Color',
+    'ru': 'Цвет сигнала',
+    'pl': 'Kolor sygnału',
+  });
+
+  String get timeRemaining => _localizedString('time_remaining', {
+    'en': 'Time Remaining',
+    'ru': 'Осталось времени',
+    'pl': 'Pozostały czas',
+  });
+
+  String get lastUpdate => _localizedString('last_update', {
+    'en': 'Last Update',
+    'ru': 'Последнее обновление',
+    'pl': 'Ostatnia aktualizacja',
+  });
+
+  String get recognizedSigns => _localizedString('recognized_signs', {
+    'en': 'Recognized Signs',
+    'ru': 'Распознанные знаки',
+    'pl': 'Rozpoznane znaki',
+  });
+
+  String get toggleOverlay => _localizedString('toggle_overlay', {
+    'en': 'Toggle Overlay',
+    'ru': 'Переключить наложение',
+    'pl': 'Przełącz nakładkę',
+  });
+
+  String get reportBug => _localizedString('report_bug', {
+    'en': 'Report Bug',
+    'ru': 'Сообщить об ошибке',
+    'pl': 'Zgłoś błąd',
+  });
+
+  String get bugReportMessage => _localizedString('bug_report_message', {
+    'en': 'Bug report feature would export logs and device info',
+    'ru': 'Функция отчета об ошибке экспортирует журналы и информацию об устройстве',
+    'pl': 'Funkcja zgłaszania błędów eksportuje dzienniki i informacje o urządzeniu',
+  });
+
+  String secondsAgo(int seconds) => _localizedString('seconds_ago', {
+    'en': '${seconds}s ago',
+    'ru': '$seconds сек. назад',
+    'pl': '$seconds sek. temu',
+  });
+
+  String minutesAgo(int minutes) => _localizedString('minutes_ago', {
+    'en': '${minutes}m ago',
+    'ru': '$minutes мин. назад',
+    'pl': '$minutes min. temu',
+  });
+
+  // Gesture hints and actions
+  String get longPressToToggleMode => _localizedString('long_press_to_toggle_mode', {
+    'en': 'Long press to toggle display mode',
+    'ru': 'Длительное нажатие для переключения режима отображения',
+    'pl': 'Długie naciśnięcie aby przełączyć tryb wyświetlania',
+  });
+
+  String get doubleTapForDetails => _localizedString('double_tap_for_details', {
+    'en': 'Double tap for detailed view',
+    'ru': 'Двойное нажатие для подробного просмотра',
+    'pl': 'Podwójne dotknięcie dla szczegółowego widoku',
+  });
+
+  String displayModeSwitchedTo(String mode) => _localizedString('display_mode_switched_to', {
+    'en': 'Display mode switched to $mode',
+    'ru': 'Режим отображения переключён на $mode',
+    'pl': 'Tryb wyświetlania przełączony na $mode',
+  });
+
+  String get quickActions => _localizedString('quick_actions', {
+    'en': 'Quick Actions',
+    'ru': 'Быстрые действия',
+    'pl': 'Szybkie akcje',
+  });
+
+  String get hideOverlay => _localizedString('hide_overlay', {
+    'en': 'Hide Overlay',
+    'ru': 'Скрыть наложение',
+    'pl': 'Ukryj nakładkę',
+  });
+
+  String get showOverlay => _localizedString('show_overlay', {
+    'en': 'Show Overlay',
+    'ru': 'Показать наложение',
+    'pl': 'Pokaż nakładkę',
+  });
+
+  String get detailedView => _localizedString('detailed_view', {
+    'en': 'Detailed View',
+    'ru': 'Подробный вид',
+    'pl': 'Widok szczegółowy',
+  });
+
+  String get tapToClose => _localizedString('tap_to_close', {
+    'en': 'Tap to close',
+    'ru': 'Нажмите для закрытия',
+    'pl': 'Dotknij aby zamknąć',
+  });
+
   String _localizedString(String key, Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en'] ?? key;
   }

@@ -6,6 +6,8 @@ class TrafficLightWidget extends StatelessWidget {
   final bool isMinimalistic;
   final bool showCountdown;
   final bool showSigns;
+  final VoidCallback? onLongPress;
+  final VoidCallback? onDoubleTap;
 
   const TrafficLightWidget({
     super.key,
@@ -13,40 +15,46 @@ class TrafficLightWidget extends StatelessWidget {
     this.isMinimalistic = false,
     this.showCountdown = true,
     this.showSigns = true,
+    this.onLongPress,
+    this.onDoubleTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black87,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[600]!, width: 2),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (!isMinimalistic) ...[
-            Text(
-              'Traffic Light',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onLongPress: onLongPress,
+      onDoubleTap: onDoubleTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[600]!, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isMinimalistic) ...[
+              Text(
+                'Traffic Light',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
+            _buildTrafficLight(),
+            if (showCountdown && state.countdownSeconds != null) ...[
+              const SizedBox(height: 16),
+              _buildCountdown(context),
+            ],
+            if (showSigns && state.recognizedSigns.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildRecognizedSigns(context),
+            ],
           ],
-          _buildTrafficLight(),
-          if (showCountdown && state.countdownSeconds != null) ...[
-            const SizedBox(height: 16),
-            _buildCountdown(context),
-          ],
-          if (showSigns && state.recognizedSigns.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            _buildRecognizedSigns(context),
-          ],
-        ],
+        ),
       ),
     );
   }

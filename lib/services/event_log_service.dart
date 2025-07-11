@@ -57,6 +57,11 @@ class EventLogService extends ChangeNotifier {
       if (!await file.exists()) return;
       
       final jsonString = await file.readAsString();
+      if (jsonString.isEmpty) {
+        debugPrint('Event log file is empty, skipping load');
+        return;
+      }
+      
       final List<dynamic> eventsJson = json.decode(jsonString);
       
       _events.clear();
@@ -67,6 +72,17 @@ class EventLogService extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading events from file: $e');
+      debugPrint('Clearing corrupted event log...');
+      // Clear the corrupted file
+      try {
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/event_log.json');
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } catch (deleteError) {
+        debugPrint('Error deleting corrupted file: $deleteError');
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_settings.dart';
@@ -17,18 +18,22 @@ class SettingsProvider extends ChangeNotifier {
     final settingsJson = _prefs.getString('app_settings');
     if (settingsJson != null) {
       try {
-        // Simple JSON parsing fallback - in production, use proper JSON
-        _settings = const AppSettings(); // Keep default for now
+        final Map<String, dynamic> json = jsonDecode(settingsJson);
+        _settings = AppSettings.fromJson(json);
       } catch (e) {
         debugPrint('Error loading settings: $e');
+        debugPrint('Clearing corrupted settings...');
+        // Clear corrupted data
+        await _prefs.remove('app_settings');
         _settings = const AppSettings();
       }
     }
+    notifyListeners();
   }
 
   Future<void> _saveSettings() async {
     try {
-      final settingsJson = _settings.toJson().toString();
+      final settingsJson = jsonEncode(_settings.toJson());
       await _prefs.setString('app_settings', settingsJson);
     } catch (e) {
       debugPrint('Error saving settings: $e');

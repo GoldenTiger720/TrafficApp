@@ -6,6 +6,7 @@ import '../providers/traffic_light_provider.dart';
 import '../services/connection_service.dart';
 import '../services/event_log_service.dart';
 import '../models/traffic_light_state.dart';
+import '../l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -22,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(AppLocalizations.of(context)?.settings ?? 'Settings'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Consumer<SettingsProvider>(
@@ -33,15 +34,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               _buildSection(
-                'Overlay Settings',
+                AppLocalizations.of(context)?.overlaySettings ?? 'Overlay Settings',
                 [
                   _buildSwitchTile(
-                    'Enable Overlay',
+                    AppLocalizations.of(context)?.enableOverlay ?? 'Enable Overlay',
                     settings.overlayEnabled,
                     (value) => settingsProvider.updateOverlayEnabled(value),
                   ),
                   _buildSliderTile(
-                    'Transparency',
+                    AppLocalizations.of(context)?.transparency ?? 'Transparency',
                     settings.overlayTransparency,
                     0.0,
                     1.0,
@@ -49,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     valueFormatter: (value) => '${(value * 100).round()}%',
                   ),
                   _buildSliderTile(
-                    'Size',
+                    AppLocalizations.of(context)?.size ?? 'Size',
                     settings.overlaySize,
                     0.5,
                     2.0,
@@ -57,17 +58,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     valueFormatter: (value) => '${(value * 100).round()}%',
                   ),
                   ListTile(
-                    title: const Text('Reset Position'),
-                    subtitle: const Text('Move overlay to center'),
+                    title: Text(AppLocalizations.of(context)?.resetPosition ?? 'Reset Position'),
+                    subtitle: Text(AppLocalizations.of(context)?.moveOverlayToCenter ?? 'Move overlay to center'),
                     trailing: ElevatedButton(
                       onPressed: () => settingsProvider.resetOverlayPosition(),
-                      child: const Text('Reset'),
+                      child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
                     ),
                   ),
                 ],
               ),
               _buildSection(
-                'Connection Settings',
+                AppLocalizations.of(context)?.connectionSettings ?? 'Connection Settings',
                 [
                   _buildDropdownTile<ConnectionType>(
                     'Connection Type',
@@ -78,61 +79,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   _buildDeviceSelector(context, settings),
                   ListTile(
-                    title: const Text('Test Connection'),
+                    title: Text(AppLocalizations.of(context)?.testConnection ?? 'Test Connection'),
                     subtitle: Text(_getConnectionStatus(context)),
                     trailing: ElevatedButton(
                       onPressed: _testConnection,
-                      child: const Text('Test'),
+                      child: Text(AppLocalizations.of(context)?.test ?? 'Test'),
                     ),
                   ),
                 ],
               ),
               _buildSection(
-                'Notifications',
+                AppLocalizations.of(context)?.notifications ?? 'Notifications',
                 [
                   _buildSwitchTile(
-                    'Sound Notifications',
+                    AppLocalizations.of(context)?.soundNotifications ?? 'Sound Notifications',
                     settings.soundNotifications,
                     (value) => settingsProvider.updateSoundNotifications(value),
                   ),
                   _buildSwitchTile(
-                    'Vibration Notifications',
+                    AppLocalizations.of(context)?.vibrationNotifications ?? 'Vibration Notifications',
                     settings.vibrationNotifications,
                     (value) => settingsProvider.updateVibrationNotifications(value),
                   ),
                 ],
               ),
               _buildSection(
-                'Appearance',
+                AppLocalizations.of(context)?.appearance ?? 'Appearance',
                 [
                   _buildDropdownTile<AppTheme>(
-                    'Theme',
+                    AppLocalizations.of(context)?.theme ?? 'Theme',
                     settings.theme,
                     AppTheme.values,
                     (value) => settingsProvider.updateTheme(value!),
-                    itemBuilder: (theme) => Text(_getThemeDisplayName(theme)),
+                    itemBuilder: (theme) => Text(_getThemeDisplayName(theme, context)),
                   ),
                   _buildDropdownTile<Language>(
-                    'Language',
+                    AppLocalizations.of(context)?.language ?? 'Language',
                     settings.language,
                     Language.values,
                     (value) => settingsProvider.updateLanguage(value!),
                     itemBuilder: (lang) => Text(_getLanguageDisplayName(lang)),
                   ),
                   _buildDropdownTile<DisplayMode>(
-                    'Display Mode',
+                    AppLocalizations.of(context)?.displayMode ?? 'Display Mode',
                     settings.displayMode,
                     DisplayMode.values,
                     (value) => settingsProvider.updateDisplayMode(value!),
-                    itemBuilder: (mode) => Text(_getDisplayModeDisplayName(mode)),
+                    itemBuilder: (mode) => Text(_getDisplayModeDisplayName(mode, context)),
                   ),
                 ],
               ),
               _buildSection(
-                'Developer Options',
+                AppLocalizations.of(context)?.developerOptions ?? 'Developer Options',
                 [
                   _buildSwitchTile(
-                    'Demo Mode',
+                    AppLocalizations.of(context)?.demoMode ?? 'Demo Mode',
                     settings.demoMode,
                     (value) {
                       settingsProvider.updateDemoMode(value);
@@ -143,17 +144,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
               _buildSection(
-                'Data & Privacy',
+                AppLocalizations.of(context)?.dataPrivacy ?? 'Data & Privacy',
                 [
                   ListTile(
-                    title: const Text('Export Event Log'),
-                    subtitle: const Text('Share event log for debugging'),
+                    title: Text(AppLocalizations.of(context)?.exportEventLog ?? 'Export Event Log'),
+                    subtitle: Text(AppLocalizations.of(context)?.shareEventLogForDebugging ?? 'Share event log for debugging'),
                     trailing: const Icon(Icons.share),
                     onTap: () => _exportEventLog(context),
                   ),
                   ListTile(
-                    title: const Text('Clear Event Log'),
-                    subtitle: const Text('Delete all logged events'),
+                    title: Text(AppLocalizations.of(context)?.clearEventLog ?? 'Clear Event Log'),
+                    subtitle: Text(AppLocalizations.of(context)?.deleteAllLoggedEvents ?? 'Delete all logged events'),
                     trailing: const Icon(Icons.delete_outline),
                     onTap: () => _clearEventLog(context),
                   ),
@@ -243,8 +244,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       children: [
         ListTile(
-          title: const Text('Available Devices'),
-          subtitle: Text(_isScanning ? 'Scanning...' : '${_availableDevices.length} devices found'),
+          title: Text(AppLocalizations.of(context)?.availableDevices ?? 'Available Devices'),
+          subtitle: Text(_isScanning 
+              ? (AppLocalizations.of(context)?.scanning ?? 'Scanning...') 
+              : (AppLocalizations.of(context)?.devicesFound(_availableDevices.length) ?? '${_availableDevices.length} devices found')),
           trailing: IconButton(
             icon: _isScanning ? const CircularProgressIndicator() : const Icon(Icons.refresh),
             onPressed: _isScanning ? null : _scanForDevices,
@@ -267,9 +270,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       children: [
         const Divider(),
-        const ListTile(
-          title: Text('Manual Overlay Test'),
-          subtitle: Text('Test overlay colors manually'),
+        ListTile(
+          title: Text(AppLocalizations.of(context)?.manualOverlayTest ?? 'Manual Overlay Test'),
+          subtitle: Text(AppLocalizations.of(context)?.testOverlayColors ?? 'Test overlay colors manually'),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -277,17 +280,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () => context.read<TrafficLightProvider>().testOverlay(TrafficLightColor.red),
-              child: const Text('Red', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)?.red ?? 'Red', style: const TextStyle(color: Colors.white)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
               onPressed: () => context.read<TrafficLightProvider>().testOverlay(TrafficLightColor.yellow),
-              child: const Text('Yellow', style: TextStyle(color: Colors.black)),
+              child: Text(AppLocalizations.of(context)?.yellow ?? 'Yellow', style: const TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               onPressed: () => context.read<TrafficLightProvider>().testOverlay(TrafficLightColor.green),
-              child: const Text('Green', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)?.green ?? 'Green', style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -296,14 +299,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  String _getThemeDisplayName(AppTheme theme) {
+  String _getThemeDisplayName(AppTheme theme, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (theme) {
       case AppTheme.light:
-        return 'Light';
+        return l10n?.light ?? 'Light';
       case AppTheme.dark:
-        return 'Dark';
+        return l10n?.dark ?? 'Dark';
       case AppTheme.system:
-        return 'System';
+        return l10n?.system ?? 'System';
     }
   }
 
@@ -318,18 +322,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  String _getDisplayModeDisplayName(DisplayMode mode) {
+  String _getDisplayModeDisplayName(DisplayMode mode, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (mode) {
       case DisplayMode.minimalistic:
-        return 'Minimalistic';
+        return l10n?.minimalistic ?? 'Minimalistic';
       case DisplayMode.advanced:
-        return 'Advanced';
+        return l10n?.advanced ?? 'Advanced';
     }
   }
 
   String _getConnectionStatus(BuildContext context) {
     final isConnected = context.watch<TrafficLightProvider>().isConnected;
-    return isConnected ? 'Connected' : 'Disconnected';
+    final l10n = AppLocalizations.of(context);
+    return isConnected ? (l10n?.connected ?? 'Connected') : (l10n?.disconnected ?? 'Disconnected');
   }
 
   Future<void> _scanForDevices() async {
@@ -354,7 +360,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error scanning for devices: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.errorScanningForDevices(e.toString()) ?? 'Error scanning for devices: $e')),
       );
     } finally {
       setState(() {
@@ -368,7 +374,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     
     if (settings.selectedDeviceId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a device first')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.pleaseSelectDeviceFirst ?? 'Please select a device first')),
       );
       return;
     }
@@ -385,13 +391,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(success ? 'Connection successful!' : 'Connection failed'),
+          content: Text(success 
+              ? (AppLocalizations.of(context)?.connectionSuccessful ?? 'Connection successful!') 
+              : (AppLocalizations.of(context)?.connectionFailed ?? 'Connection failed')),
           backgroundColor: success ? Colors.green : Colors.red,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Connection error: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.connectionError(e.toString()) ?? 'Connection error: $e')),
       );
     }
   }
@@ -400,11 +408,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       await context.read<EventLogService>().shareEventLog();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event log exported successfully')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.eventLogExportedSuccessfully ?? 'Event log exported successfully')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Export failed: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.exportFailed(e.toString()) ?? 'Export failed: $e')),
       );
     }
   }
@@ -413,16 +421,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear Event Log'),
-        content: const Text('This will permanently delete all logged events. Continue?'),
+        title: Text(AppLocalizations.of(context)?.clearEventLog ?? 'Clear Event Log'),
+        content: Text(AppLocalizations.of(context)?.clearEventLogConfirm ?? 'This will permanently delete all logged events. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Clear'),
+            child: Text(AppLocalizations.of(context)?.clear ?? 'Clear'),
           ),
         ],
       ),
@@ -431,7 +439,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (confirmed == true) {
       context.read<EventLogService>().clearEvents();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event log cleared')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.eventLogCleared ?? 'Event log cleared')),
       );
     }
   }

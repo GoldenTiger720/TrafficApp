@@ -10,6 +10,7 @@ class DraggableOverlay extends StatefulWidget {
   final double initialY;
   final bool isMinimalistic;
   final Function(double x, double y)? onPositionChanged;
+  final VoidCallback? onDoubleTap;
 
   const DraggableOverlay({
     super.key,
@@ -20,6 +21,7 @@ class DraggableOverlay extends StatefulWidget {
     required this.initialY,
     required this.isMinimalistic,
     this.onPositionChanged,
+    this.onDoubleTap,
   });
 
   @override
@@ -30,6 +32,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
   late double _x;
   late double _y;
   bool _isDragging = false;
+  bool _hasMoved = false;
 
   @override
   void initState() {
@@ -57,13 +60,20 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
       left: _x * screenSize.width - (100 * widget.size),
       top: _y * screenSize.height - (100 * widget.size),
       child: GestureDetector(
+        onDoubleTap: () {
+          if (!_hasMoved) {
+            widget.onDoubleTap?.call();
+          }
+        },
         onPanStart: (details) {
           setState(() {
             _isDragging = true;
+            _hasMoved = false;
           });
         },
         onPanUpdate: (details) {
           setState(() {
+            _hasMoved = true;
             _x = (details.globalPosition.dx + (100 * widget.size)) / screenSize.width;
             _y = (details.globalPosition.dy + (100 * widget.size)) / screenSize.height;
             
@@ -77,6 +87,14 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
             _isDragging = false;
           });
           widget.onPositionChanged?.call(_x, _y);
+          // Reset moved flag after a delay to allow double-tap detection
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) {
+              setState(() {
+                _hasMoved = false;
+              });
+            }
+          });
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: _isDragging ? 0 : 200),
@@ -155,6 +173,7 @@ class OverlayManager extends StatelessWidget {
   final double positionY;
   final bool isMinimalistic;
   final Function(double x, double y)? onPositionChanged;
+  final VoidCallback? onOverlayDoubleTap;
 
   const OverlayManager({
     super.key,
@@ -167,6 +186,7 @@ class OverlayManager extends StatelessWidget {
     required this.positionY,
     required this.isMinimalistic,
     this.onPositionChanged,
+    this.onOverlayDoubleTap,
   });
 
   @override
@@ -183,6 +203,7 @@ class OverlayManager extends StatelessWidget {
             initialY: positionY,
             isMinimalistic: isMinimalistic,
             onPositionChanged: onPositionChanged,
+            onDoubleTap: onOverlayDoubleTap,
           ),
       ],
     );

@@ -6,8 +6,10 @@ import '../widgets/traffic_light_widget.dart';
 import '../widgets/draggable_overlay.dart';
 import '../models/app_settings.dart';
 import '../models/traffic_light_state.dart';
+import '../l10n/app_localizations.dart';
 import 'settings_screen.dart';
 import 'event_log_screen.dart';
+import 'traffic_light_detail_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -36,20 +38,21 @@ class _MainScreenState extends State<MainScreen> {
             onPositionChanged: (x, y) {
               settingsProvider.updateOverlayPosition(x, y);
             },
+            onOverlayDoubleTap: () => _openDetailView(context),
             child: Scaffold(
               appBar: AppBar(
-                title: const Text('Traffic Light Monitor'),
+                title: Text(AppLocalizations.of(context)?.trafficLightMonitor ?? 'Traffic Light Monitor'),
                 backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.history),
                     onPressed: () => _navigateToEventLog(context),
-                    tooltip: 'Event Log',
+                    tooltip: AppLocalizations.of(context)?.eventLog ?? 'Event Log',
                   ),
                   IconButton(
                     icon: const Icon(Icons.settings),
                     onPressed: () => _navigateToSettings(context),
-                    tooltip: 'Settings',
+                    tooltip: AppLocalizations.of(context)?.settings ?? 'Settings',
                   ),
                 ],
               ),
@@ -93,6 +96,8 @@ class _MainScreenState extends State<MainScreen> {
                       TrafficLightWidget(
                         state: trafficProvider.currentState,
                         isMinimalistic: settings.displayMode == DisplayMode.minimalistic,
+                        onLongPress: () => _toggleDisplayMode(context),
+                        onDoubleTap: () => _openDetailView(context),
                       ),
                       const SizedBox(height: 32),
                       if (trafficProvider.demoMode)
@@ -131,7 +136,9 @@ class _MainScreenState extends State<MainScreen> {
           ),
           const SizedBox(width: 8),
           Text(
-            trafficProvider.isConnected ? 'Connected' : 'Disconnected',
+            trafficProvider.isConnected 
+                ? (AppLocalizations.of(context)?.connected ?? 'Connected') 
+                : (AppLocalizations.of(context)?.disconnected ?? 'Disconnected'),
             style: TextStyle(
               color: trafficProvider.isConnected ? Colors.green : Colors.red,
               fontWeight: FontWeight.bold,
@@ -175,7 +182,9 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  trafficProvider.isConnected ? 'Device Connected' : 'Device Disconnected',
+                  trafficProvider.isConnected 
+                      ? (AppLocalizations.of(context)?.deviceConnected ?? 'Device Connected') 
+                      : (AppLocalizations.of(context)?.deviceDisconnected ?? 'Device Disconnected'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: trafficProvider.isConnected ? Colors.green : Colors.red,
                   ),
@@ -184,7 +193,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Last updated: ${_formatTimestamp(trafficProvider.currentState.timestamp)}',
+              '${AppLocalizations.of(context)?.lastUpdated ?? 'Last updated'}: ${_formatTimestamp(trafficProvider.currentState.timestamp, context)}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -200,11 +209,11 @@ class _MainScreenState extends State<MainScreen> {
         child: Column(
           children: [
             Text(
-              'Demo Mode Controls',
+              AppLocalizations.of(context)?.demoModeControls ?? 'Demo Mode Controls',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            const Text('Test overlay colors:'),
+            Text(AppLocalizations.of(context)?.testOverlayColorsShort ?? 'Test overlay colors:'),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -212,17 +221,17 @@ class _MainScreenState extends State<MainScreen> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () => trafficProvider.testOverlay(TrafficLightColor.red),
-                  child: const Text('Red', style: TextStyle(color: Colors.white)),
+                  child: Text(AppLocalizations.of(context)?.red ?? 'Red', style: const TextStyle(color: Colors.white)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                   onPressed: () => trafficProvider.testOverlay(TrafficLightColor.yellow),
-                  child: const Text('Yellow', style: TextStyle(color: Colors.black)),
+                  child: Text(AppLocalizations.of(context)?.yellow ?? 'Yellow', style: const TextStyle(color: Colors.black)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () => trafficProvider.testOverlay(TrafficLightColor.green),
-                  child: const Text('Green', style: TextStyle(color: Colors.white)),
+                  child: Text(AppLocalizations.of(context)?.green ?? 'Green', style: const TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -242,18 +251,18 @@ class _MainScreenState extends State<MainScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Current Status',
+              AppLocalizations.of(context)?.currentStatus ?? 'Current Status',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            _buildInfoRow(context, 'Signal Color', state.currentColor.name.toUpperCase()),
+            _buildInfoRow(context, AppLocalizations.of(context)?.signalColor ?? 'Signal Color', _getColorName(state.currentColor, context)),
             if (state.countdownSeconds != null)
-              _buildInfoRow(context, 'Time Remaining', '${state.countdownSeconds}s'),
-            _buildInfoRow(context, 'Last Update', _formatTimestamp(state.timestamp)),
+              _buildInfoRow(context, AppLocalizations.of(context)?.timeRemaining ?? 'Time Remaining', '${state.countdownSeconds}s'),
+            _buildInfoRow(context, AppLocalizations.of(context)?.lastUpdate ?? 'Last Update', _formatTimestamp(state.timestamp, context)),
             if (state.recognizedSigns.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                'Recognized Signs',
+                AppLocalizations.of(context)?.recognizedSigns ?? 'Recognized Signs',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 4),
@@ -296,30 +305,43 @@ class _MainScreenState extends State<MainScreen> {
             onPressed: () {
               context.read<SettingsProvider>().updateOverlayEnabled(!settings.overlayEnabled);
             },
-            tooltip: 'Toggle Overlay',
+            tooltip: AppLocalizations.of(context)?.toggleOverlay ?? 'Toggle Overlay',
             child: const Icon(Icons.visibility_off),
           ),
         const SizedBox(height: 8),
         FloatingActionButton(
           heroTag: "bug_report",
           onPressed: _reportBug,
-          tooltip: 'Report Bug',
+          tooltip: AppLocalizations.of(context)?.reportBug ?? 'Report Bug',
           child: const Icon(Icons.bug_report),
         ),
       ],
     );
   }
 
-  String _formatTimestamp(DateTime timestamp) {
+  String _formatTimestamp(DateTime timestamp, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
+    final l10n = AppLocalizations.of(context);
     
     if (difference.inSeconds < 60) {
-      return '${difference.inSeconds}s ago';
+      return l10n?.secondsAgo(difference.inSeconds) ?? '${difference.inSeconds}s ago';
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return l10n?.minutesAgo(difference.inMinutes) ?? '${difference.inMinutes}m ago';
     } else {
       return '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
+    }
+  }
+
+  String _getColorName(TrafficLightColor color, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (color) {
+      case TrafficLightColor.red:
+        return l10n?.red ?? 'RED';
+      case TrafficLightColor.yellow:
+        return l10n?.yellow ?? 'YELLOW';
+      case TrafficLightColor.green:
+        return l10n?.green ?? 'GREEN';
     }
   }
 
@@ -336,12 +358,43 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _toggleDisplayMode(BuildContext context) {
+    final settingsProvider = context.read<SettingsProvider>();
+    final currentMode = settingsProvider.settings.displayMode;
+    final newMode = currentMode == DisplayMode.minimalistic 
+        ? DisplayMode.advanced 
+        : DisplayMode.minimalistic;
+    
+    settingsProvider.updateDisplayMode(newMode);
+    
+    final l10n = AppLocalizations.of(context);
+    final modeName = newMode == DisplayMode.minimalistic 
+        ? (l10n?.minimalistic ?? 'Minimalistic')
+        : (l10n?.advanced ?? 'Advanced');
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n?.displayModeSwitchedTo(modeName) ?? 'Display mode switched to $modeName'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _openDetailView(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const TrafficLightDetailScreen(),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
   void _reportBug() {
     // In a real app, this would automatically export logs and device info
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Bug report feature would export logs and device info'),
-        duration: Duration(seconds: 3),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)?.bugReportMessage ?? 'Bug report feature would export logs and device info'),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
