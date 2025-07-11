@@ -518,6 +518,92 @@ class AppLocalizations {
     'pl': 'Dotknij aby zamknąć',
   });
 
+  // Advanced mode elements
+  String get leftLane => _localizedString('left_lane', {
+    'en': 'LEFT',
+    'ru': 'ЛЕВАЯ',
+    'pl': 'LEWA',
+  });
+
+  String get rightLane => _localizedString('right_lane', {
+    'en': 'RIGHT',
+    'ru': 'ПРАВАЯ',
+    'pl': 'PRAWA',
+  });
+
+  String get laneMarkers => _localizedString('lane_markers', {
+    'en': 'Lane Markers',
+    'ru': 'Разметка полос',
+    'pl': 'Oznaczenia pasów',
+  });
+
+  String get trafficControl => _localizedString('traffic_control', {
+    'en': 'Traffic Control',
+    'ru': 'Управление движением',
+    'pl': 'Kontrola ruchu',
+  });
+
+  String get roadSigns => _localizedString('road_signs', {
+    'en': 'Road Signs',
+    'ru': 'Дорожные знаки',
+    'pl': 'Znaki drogowe',
+  });
+
+  // Road sign names
+  String get stopSign => _localizedString('stop_sign', {
+    'en': 'STOP',
+    'ru': 'СТОП',
+    'pl': 'STOP',
+  });
+
+  String get yieldSign => _localizedString('yield_sign', {
+    'en': 'YIELD',
+    'ru': 'УСТУПИ',
+    'pl': 'USTĄP',
+  });
+
+  String get speedLimitSign => _localizedString('speed_limit_sign', {
+    'en': 'SPEED LIMIT',
+    'ru': 'ОГРАНИЧЕНИЕ СКОРОСТИ',
+    'pl': 'OGRANICZENIE PRĘDKOŚCI',
+  });
+
+  String get noEntrySign => _localizedString('no_entry_sign', {
+    'en': 'NO ENTRY',
+    'ru': 'ВЪЕЗД ЗАПРЕЩЁН',
+    'pl': 'ZAKAZ WJAZDU',
+  });
+
+  String get constructionSign => _localizedString('construction_sign', {
+    'en': 'CONSTRUCTION',
+    'ru': 'РЕМОНТ',
+    'pl': 'ROBOTY',
+  });
+
+  String get pedestrianSign => _localizedString('pedestrian_sign', {
+    'en': 'PEDESTRIAN',
+    'ru': 'ПЕШЕХОДЫ',
+    'pl': 'PRZEJŚCIE',
+  });
+
+  String get turnLeftSign => _localizedString('turn_left_sign', {
+    'en': 'TURN LEFT',
+    'ru': 'ПОВОРОТ НАЛЕВО',
+    'pl': 'SKRĘĆ W LEWO',
+  });
+
+  String get turnRightSign => _localizedString('turn_right_sign', {
+    'en': 'TURN RIGHT',
+    'ru': 'ПОВОРОТ НАПРАВО',
+    'pl': 'SKRĘĆ W PRAWO',
+  });
+
+  String get goStraightSign => _localizedString('go_straight_sign', {
+    'en': 'GO STRAIGHT',
+    'ru': 'ПРЯМО',
+    'pl': 'JEDŹ PROSTO',
+  });
+
   String _localizedString(String key, Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en'] ?? key;
   }
