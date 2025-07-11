@@ -604,6 +604,12 @@ class AppLocalizations {
     'pl': 'JEDŹ PROSTO',
   });
 
+  String get noSignsDetected => _localizedString('no_signs_detected', {
+    'en': 'No signs detected',
+    'ru': 'Знаки не обнаружены',
+    'pl': 'Nie wykryto znaków',
+  });
+
   String _localizedString(String key, Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en'] ?? key;
   }

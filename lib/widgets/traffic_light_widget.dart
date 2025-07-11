@@ -62,18 +62,248 @@ class TrafficLightWidget extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         
-        // Main traffic control area with lane markers
-        _buildTrafficControlArea(context),
+        // Central critical information area
+        _buildCentralCriticalArea(context),
         
-        // Road signs section
-        if (showSigns && state.recognizedSigns.isNotEmpty) ...[
-          const SizedBox(height: 24),
-          _buildRoadSignsSection(context),
+        // Secondary information: Road signs and lane details
+        if (showSigns) ...[
+          const SizedBox(height: 16),
+          _buildSecondaryInformation(context),
         ],
       ],
     );
+  }
+
+  Widget _buildCentralCriticalArea(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[700]!, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 3,
+          ),
+        ],
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final availableWidth = constraints.maxWidth;
+          
+          if (availableWidth > 320) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Lane markings (left)
+                Flexible(
+                  flex: 2,
+                  child: _buildEnhancedLaneMarkings(true),
+                ),
+                const SizedBox(width: 20),
+                
+                // Central critical data: Traffic light + circular timer
+                Flexible(
+                  flex: 3,
+                  child: _buildCentralTrafficDisplay(context),
+                ),
+                
+                const SizedBox(width: 20),
+                // Lane markings (right)
+                Flexible(
+                  flex: 2,
+                  child: _buildEnhancedLaneMarkings(false),
+                ),
+              ],
+            );
+          } else {
+            return Column(
+              children: [
+                // Central traffic display
+                _buildCentralTrafficDisplay(context),
+                const SizedBox(height: 16),
+                // Compact lane information
+                _buildCompactLaneDisplay(context),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildCentralTrafficDisplay(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Traffic light with circular timer positioned next to it
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Main traffic light
+            _buildAdvancedTrafficLight(),
+            
+            // Circular timer (positioned next to traffic light)
+            if (showCountdown && state.countdownSeconds != null) ...[
+              const SizedBox(width: 16),
+              _buildCircularTimer(context),
+            ],
+          ],
+        ),
+        
+        // Current status indicator
+        const SizedBox(height: 12),
+        _buildCurrentStatusIndicator(context),
+      ],
+    );
+  }
+
+  Widget _buildCircularTimer(BuildContext context) {
+    final countdown = state.countdownSeconds!;
+    final color = _getTimerColor();
+    final radius = 45.0;
+    
+    return Container(
+      width: radius * 2,
+      height: radius * 2,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color.withOpacity(0.1),
+        border: Border.all(
+          color: color,
+          width: 4,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 15,
+            spreadRadius: 3,
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          // Circular progress indicator
+          Positioned.fill(
+            child: CircularProgressIndicator(
+              value: countdown <= 60 ? (60 - countdown) / 60 : 0.0,
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.3)),
+              strokeWidth: 3,
+            ),
+          ),
+          
+          // Timer number in center
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$countdown',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
+                ),
+                Text(
+                  's',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Timer icon at top
+          Positioned(
+            top: 8,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Icon(
+                Icons.timer,
+                color: color,
+                size: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurrentStatusIndicator(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: _getStatusColor().withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _getStatusColor(), width: 2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _getStatusIcon(),
+            color: _getStatusColor(),
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _getStatusText(context),
+            style: TextStyle(
+              color: _getStatusColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor() {
+    switch (state.currentColor) {
+      case TrafficLightColor.red:
+        return Colors.red;
+      case TrafficLightColor.yellow:
+        return Colors.amber;
+      case TrafficLightColor.green:
+        return Colors.green;
+    }
+  }
+
+  IconData _getStatusIcon() {
+    switch (state.currentColor) {
+      case TrafficLightColor.red:
+        return Icons.stop;
+      case TrafficLightColor.yellow:
+        return Icons.warning;
+      case TrafficLightColor.green:
+        return Icons.play_arrow;
+    }
+  }
+
+  String _getStatusText(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (state.currentColor) {
+      case TrafficLightColor.red:
+        return l10n?.stopSign ?? 'STOP';
+      case TrafficLightColor.yellow:
+        return 'CAUTION';
+      case TrafficLightColor.green:
+        return 'GO';
+    }
   }
 
   Widget _buildTrafficControlArea(BuildContext context) {
@@ -200,6 +430,378 @@ class TrafficLightWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEnhancedLaneMarkings(bool isLeft) {
+    return Container(
+      height: 140,
+      child: Column(
+        children: [
+          // Lane direction indicator
+          Container(
+            width: 60,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.yellow[600]!, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.yellow[600]!.withOpacity(0.2),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Lane boundary lines
+                Container(
+                  width: 40,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: Colors.yellow[600],
+                    borderRadius: BorderRadius.circular(1.5),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                
+                // Direction arrows from recognized signs
+                if (_getLaneDirections().isNotEmpty) ...[
+                  ..._getLaneDirections().take(2).map((direction) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Icon(
+                      direction,
+                      color: Colors.yellow[600],
+                      size: 20,
+                    ),
+                  )),
+                ] else ...[
+                  Icon(
+                    Icons.straight,
+                    color: Colors.yellow[600],
+                    size: 20,
+                  ),
+                ],
+                
+                const SizedBox(height: 8),
+                // Bottom lane boundary
+                Container(
+                  width: 40,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: Colors.yellow[600],
+                    borderRadius: BorderRadius.circular(1.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 8),
+          // Lane label
+          Text(
+            isLeft ? 'LEFT' : 'RIGHT',
+            style: TextStyle(
+              color: Colors.yellow[600],
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactLaneDisplay(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[850],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.yellow[700]!, width: 2),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'LANE GUIDANCE',
+            style: TextStyle(
+              color: Colors.yellow[600],
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Left lane
+              Column(
+                children: [
+                  Icon(Icons.keyboard_arrow_left, color: Colors.yellow[600], size: 20),
+                  Text('LEFT', style: TextStyle(color: Colors.yellow[600], fontSize: 8)),
+                ],
+              ),
+              // Center directions
+              Row(
+                children: [
+                  ..._getLaneDirections().take(3).map((direction) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(direction, color: Colors.yellow[600], size: 16),
+                  )),
+                  if (_getLaneDirections().isEmpty)
+                    Icon(Icons.straight, color: Colors.yellow[600], size: 16),
+                ],
+              ),
+              // Right lane
+              Column(
+                children: [
+                  Icon(Icons.keyboard_arrow_right, color: Colors.yellow[600], size: 20),
+                  Text('RIGHT', style: TextStyle(color: Colors.yellow[600], fontSize: 8)),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSecondaryInformation(BuildContext context) {
+    return Column(
+      children: [
+        // Enhanced road signs display
+        _buildEnhancedRoadSigns(context),
+        const SizedBox(height: 12),
+        // Road surface representation
+        _buildSimplifiedRoadSurface(),
+      ],
+    );
+  }
+
+  Widget _buildEnhancedRoadSigns(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withOpacity(0.4), width: 2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.info_outline,
+                color: Colors.blue,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l10n?.recognizedSigns ?? 'DETECTED ROAD SIGNS',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          
+          // Show content based on whether signs are detected
+          if (state.recognizedSigns.isEmpty) ...[
+            // Show placeholder when no signs detected
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.visibility_off,
+                      size: 40,
+                      color: Colors.blue.withOpacity(0.3),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n?.noSignsDetected ?? 'No signs detected',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.blue.withOpacity(0.5),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else ...[
+            // Priority signs (stop, yield) displayed prominently
+            ...state.recognizedSigns.where((sign) => 
+              sign == RoadSign.stop || sign == RoadSign.yield || sign == RoadSign.noEntry
+            ).map((sign) => _buildPrioritySignDisplay(sign, context)),
+            
+            // Other signs in a wrapped layout
+            if (state.recognizedSigns.where((sign) => 
+              sign != RoadSign.stop && sign != RoadSign.yield && sign != RoadSign.noEntry
+            ).isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                children: state.recognizedSigns.where((sign) => 
+                  sign != RoadSign.stop && sign != RoadSign.yield && sign != RoadSign.noEntry
+                ).map((sign) => _buildEnhancedRoadSignChip(sign, context)).toList(),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrioritySignDisplay(RoadSign sign, BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _getSignColor(sign).withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _getSignColor(sign), width: 3),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _getSignColor(sign),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              _getSignIcon(sign),
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _getLocalizedSignDisplayName(sign, context),
+                  style: TextStyle(
+                    color: _getSignColor(sign),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  _getSignDescription(sign, context),
+                  style: TextStyle(
+                    color: _getSignColor(sign).withOpacity(0.8),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedRoadSignChip(RoadSign sign, BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: _getSignColor(sign).withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _getSignColor(sign), width: 2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _getSignIcon(sign),
+            color: _getSignColor(sign),
+            size: 20,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _getLocalizedSignDisplayName(sign, context),
+            style: TextStyle(
+              color: _getSignColor(sign),
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getSignDescription(RoadSign sign, BuildContext context) {
+    switch (sign) {
+      case RoadSign.stop:
+        return 'Complete stop required';
+      case RoadSign.yield:
+        return 'Give way to traffic';
+      case RoadSign.noEntry:
+        return 'Entry prohibited';
+      default:
+        return '';
+    }
+  }
+
+  Widget _buildSimplifiedRoadSurface() {
+    return Container(
+      height: 30,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey[850],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          // Left lane
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.yellow[600]!, width: 2),
+                ),
+              ),
+            ),
+          ),
+          // Center divider
+          Container(
+            width: 20,
+            child: Center(
+              child: Container(
+                width: 2,
+                height: 20,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          // Right lane
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: Colors.yellow[600]!, width: 2),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
