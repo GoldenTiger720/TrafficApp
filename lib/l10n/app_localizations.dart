@@ -610,6 +610,93 @@ class AppLocalizations {
     'pl': 'Nie wykryto znaków',
   });
 
+  // Navigation
+  String get home => _localizedString('home', {
+    'en': 'Home',
+    'ru': 'Главная',
+    'pl': 'Strona główna',
+  });
+
+  String get map => _localizedString('map', {
+    'en': 'Map',
+    'ru': 'Карта',
+    'pl': 'Mapa',
+  });
+
+  String get routes => _localizedString('routes', {
+    'en': 'Routes',
+    'ru': 'Маршруты',
+    'pl': 'Trasy',
+  });
+
+  String get about => _localizedString('about', {
+    'en': 'About',
+    'ru': 'О программе',
+    'pl': 'O aplikacji',
+  });
+
+  // Map Screen
+  String get currentLocation => _localizedString('current_location', {
+    'en': 'Current Location',
+    'ru': 'Текущее местоположение',
+    'pl': 'Bieżąca lokalizacja',
+  });
+
+  String get enableLocationServices => _localizedString('enable_location_services', {
+    'en': 'Please enable location services',
+    'ru': 'Пожалуйста, включите службы геолокации',
+    'pl': 'Proszę włączyć usługi lokalizacji',
+  });
+
+  String get locationPermissionRequired => _localizedString('location_permission_required', {
+    'en': 'Location permission required',
+    'ru': 'Требуется разрешение на местоположение',
+    'pl': 'Wymagane uprawnienie lokalizacji',
+  });
+
+  String get loadingLocation => _localizedString('loading_location', {
+    'en': 'Loading location...',
+    'ru': 'Загрузка местоположения...',
+    'pl': 'Ładowanie lokalizacji...',
+  });
+
+  String get tapToAddTrafficLight => _localizedString('tap_to_add_traffic_light', {
+    'en': 'Tap on the map to add traffic light markers',
+    'ru': 'Нажмите на карте, чтобы добавить маркеры светофоров',
+    'pl': 'Dotknij mapę, aby dodać znaczniki sygnalizacji',
+  });
+
+  String get refresh => _localizedString('refresh', {
+    'en': 'Refresh',
+    'ru': 'Обновить',
+    'pl': 'Odśwież',
+  });
+
+  // Routes Screen
+  String get frequentRoutes => _localizedString('frequent_routes', {
+    'en': 'Frequent Routes',
+    'ru': 'Частые маршруты',
+    'pl': 'Częste trasy',
+  });
+
+  String get routesDescription => _localizedString('routes_description', {
+    'en': 'Your most frequently used traffic routes',
+    'ru': 'Ваши наиболее часто используемые маршруты',
+    'pl': 'Twoje najczęściej używane trasy',
+  });
+
+  String get addRoute => _localizedString('add_route', {
+    'en': 'Add Route',
+    'ru': 'Добавить маршрут',
+    'pl': 'Dodaj trasę',
+  });
+
+  String get navigate => _localizedString('navigate', {
+    'en': 'Navigate',
+    'ru': 'Навигация',
+    'pl': 'Nawiguj',
+  });
+
   String _localizedString(String key, Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en'] ?? key;
   }

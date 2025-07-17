@@ -66,6 +66,15 @@ dependencies:
   
   # JSON handling
   json_annotation: ^4.8.1
+  
+  # Maps and location
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  location: ^5.0.3
+  
+  # Animations
+  animations: ^2.0.8
+  lottie: ^2.7.0
 
 dev_dependencies:
   flutter_test:

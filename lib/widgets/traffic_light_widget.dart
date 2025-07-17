@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
 import '../models/traffic_light_state.dart';
 import '../l10n/app_localizations.dart';
 
-class TrafficLightWidget extends StatelessWidget {
+class TrafficLightWidget extends StatefulWidget {
   final TrafficLightState state;
   final bool isMinimalistic;
   final bool showCountdown;
@@ -21,10 +22,86 @@ class TrafficLightWidget extends StatelessWidget {
   });
 
   @override
+  State<TrafficLightWidget> createState() => _TrafficLightWidgetState();
+}
+
+class _TrafficLightWidgetState extends State<TrafficLightWidget> 
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late AnimationController _glowController;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _glowAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    
+    _glowController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    _glowAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _glowController,
+      curve: Curves.easeInOut,
+    ));
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Don't start the animations - keep them static
+    // _pulseController.repeat(reverse: true);
+    // _glowController.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _glowController.dispose();
+    super.dispose();
+  }
+
+  Color _getCurrentLightColor() {
+    switch (widget.state.currentColor) {
+      case TrafficLightColor.red:
+        return Colors.red;
+      case TrafficLightColor.yellow:
+        return Colors.amber;
+      case TrafficLightColor.green:
+        return Colors.green;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: onLongPress,
-      onDoubleTap: onDoubleTap,
+      onLongPress: widget.onLongPress,
+      onDoubleTap: widget.onDoubleTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -32,7 +109,7 @@ class TrafficLightWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey[600]!, width: 2),
         ),
-        child: isMinimalistic 
+        child: widget.isMinimalistic 
             ? _buildMinimalisticView()
             : _buildAdvancedView(context),
       ),
@@ -68,7 +145,7 @@ class TrafficLightWidget extends StatelessWidget {
         _buildCentralCriticalArea(context),
         
         // Secondary information: Road signs and lane details
-        if (showSigns) ...[
+        if (widget.showSigns) ...[
           const SizedBox(height: 16),
           _buildSecondaryInformation(context),
         ],
@@ -150,7 +227,7 @@ class TrafficLightWidget extends StatelessWidget {
             _buildAdvancedTrafficLight(),
             
             // Circular timer (positioned next to traffic light)
-            if (showCountdown && state.countdownSeconds != null) ...[
+            if (widget.showCountdown && widget.state.countdownSeconds != null) ...[
               const SizedBox(width: 16),
               _buildCircularTimer(context),
             ],
@@ -165,7 +242,7 @@ class TrafficLightWidget extends StatelessWidget {
   }
 
   Widget _buildCircularTimer(BuildContext context) {
-    final countdown = state.countdownSeconds!;
+    final countdown = widget.state.countdownSeconds!;
     final color = _getTimerColor();
     final radius = 45.0;
     
@@ -273,7 +350,7 @@ class TrafficLightWidget extends StatelessWidget {
   }
 
   Color _getStatusColor() {
-    switch (state.currentColor) {
+    switch (widget.state.currentColor) {
       case TrafficLightColor.red:
         return Colors.red;
       case TrafficLightColor.yellow:
@@ -284,7 +361,7 @@ class TrafficLightWidget extends StatelessWidget {
   }
 
   IconData _getStatusIcon() {
-    switch (state.currentColor) {
+    switch (widget.state.currentColor) {
       case TrafficLightColor.red:
         return Icons.stop;
       case TrafficLightColor.yellow:
@@ -296,7 +373,7 @@ class TrafficLightWidget extends StatelessWidget {
 
   String _getStatusText(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    switch (state.currentColor) {
+    switch (widget.state.currentColor) {
       case TrafficLightColor.red:
         return l10n?.stopSign ?? 'STOP';
       case TrafficLightColor.yellow:
@@ -340,7 +417,7 @@ class TrafficLightWidget extends StatelessWidget {
                       child: Column(
                         children: [
                           _buildAdvancedTrafficLight(),
-                          if (showCountdown && state.countdownSeconds != null) ...[
+                          if (widget.showCountdown && widget.state.countdownSeconds != null) ...[
                             const SizedBox(height: 8),
                             _buildCountdownTimer(context),
                           ],
@@ -364,7 +441,7 @@ class TrafficLightWidget extends StatelessWidget {
                     Column(
                       children: [
                         _buildAdvancedTrafficLight(),
-                        if (showCountdown && state.countdownSeconds != null) ...[
+                        if (widget.showCountdown && widget.state.countdownSeconds != null) ...[
                           const SizedBox(height: 8),
                           _buildCountdownTimer(context),
                         ],
@@ -615,7 +692,7 @@ class TrafficLightWidget extends StatelessWidget {
           const SizedBox(height: 12),
           
           // Show content based on whether signs are detected
-          if (state.recognizedSigns.isEmpty) ...[
+          if (widget.state.recognizedSigns.isEmpty) ...[
             // Show placeholder when no signs detected
             Container(
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -641,19 +718,19 @@ class TrafficLightWidget extends StatelessWidget {
             ),
           ] else ...[
             // Priority signs (stop, yield) displayed prominently
-            ...state.recognizedSigns.where((sign) => 
+            ...widget.state.recognizedSigns.where((sign) => 
               sign == RoadSign.stop || sign == RoadSign.yield || sign == RoadSign.noEntry
             ).map((sign) => _buildPrioritySignDisplay(sign, context)),
             
             // Other signs in a wrapped layout
-            if (state.recognizedSigns.where((sign) => 
+            if (widget.state.recognizedSigns.where((sign) => 
               sign != RoadSign.stop && sign != RoadSign.yield && sign != RoadSign.noEntry
             ).isNotEmpty) ...[
               const SizedBox(height: 8),
               Wrap(
                 spacing: 12,
                 runSpacing: 8,
-                children: state.recognizedSigns.where((sign) => 
+                children: widget.state.recognizedSigns.where((sign) => 
                   sign != RoadSign.stop && sign != RoadSign.yield && sign != RoadSign.noEntry
                 ).map((sign) => _buildEnhancedRoadSignChip(sign, context)).toList(),
               ),
@@ -978,7 +1055,7 @@ class TrafficLightWidget extends StatelessWidget {
 
   List<IconData> _getLaneDirections() {
     List<IconData> directions = [];
-    for (var sign in state.recognizedSigns) {
+    for (var sign in widget.state.recognizedSigns) {
       switch (sign) {
         case RoadSign.turnLeft:
           directions.add(Icons.turn_left);
@@ -1008,9 +1085,9 @@ class TrafficLightWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildLight(TrafficLightColor.red, state.currentColor == TrafficLightColor.red),
-          _buildLight(TrafficLightColor.yellow, state.currentColor == TrafficLightColor.yellow),
-          _buildLight(TrafficLightColor.green, state.currentColor == TrafficLightColor.green),
+          _buildLight(TrafficLightColor.red, widget.state.currentColor == TrafficLightColor.red),
+          _buildLight(TrafficLightColor.yellow, widget.state.currentColor == TrafficLightColor.yellow),
+          _buildLight(TrafficLightColor.green, widget.state.currentColor == TrafficLightColor.green),
         ],
       ),
     );
@@ -1035,9 +1112,9 @@ class TrafficLightWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildAdvancedLight(TrafficLightColor.red, state.currentColor == TrafficLightColor.red),
-          _buildAdvancedLight(TrafficLightColor.yellow, state.currentColor == TrafficLightColor.yellow),
-          _buildAdvancedLight(TrafficLightColor.green, state.currentColor == TrafficLightColor.green),
+          _buildAdvancedLight(TrafficLightColor.red, widget.state.currentColor == TrafficLightColor.red),
+          _buildAdvancedLight(TrafficLightColor.yellow, widget.state.currentColor == TrafficLightColor.yellow),
+          _buildAdvancedLight(TrafficLightColor.green, widget.state.currentColor == TrafficLightColor.green),
         ],
       ),
     );
@@ -1130,7 +1207,7 @@ class TrafficLightWidget extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            '${state.countdownSeconds}',
+            '${widget.state.countdownSeconds}',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -1152,7 +1229,7 @@ class TrafficLightWidget extends StatelessWidget {
   }
 
   Color _getTimerColor() {
-    switch (state.currentColor) {
+    switch (widget.state.currentColor) {
       case TrafficLightColor.red:
         return Colors.red.withOpacity(0.8);
       case TrafficLightColor.yellow:
@@ -1163,7 +1240,7 @@ class TrafficLightWidget extends StatelessWidget {
   }
 
   Color _getTimerBorderColor() {
-    switch (state.currentColor) {
+    switch (widget.state.currentColor) {
       case TrafficLightColor.red:
         return Colors.red;
       case TrafficLightColor.yellow:
@@ -1244,7 +1321,7 @@ class TrafficLightWidget extends StatelessWidget {
           Wrap(
             spacing: 12,
             runSpacing: 8,
-            children: state.recognizedSigns.map((sign) => _buildRoadSignChip(sign, context)).toList(),
+            children: widget.state.recognizedSigns.map((sign) => _buildRoadSignChip(sign, context)).toList(),
           ),
         ],
       ),
@@ -1342,7 +1419,7 @@ class TrafficLightWidget extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            '${state.countdownSeconds}s',
+            '${widget.state.countdownSeconds}s',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -1373,7 +1450,7 @@ class TrafficLightWidget extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 4,
-            children: state.recognizedSigns.map((sign) => Chip(
+            children: widget.state.recognizedSigns.map((sign) => Chip(
               label: Text(_getSignDisplayName(sign)),
               backgroundColor: Colors.blue.withOpacity(0.2),
               labelStyle: const TextStyle(color: Colors.blue, fontSize: 12),

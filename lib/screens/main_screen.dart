@@ -40,22 +40,6 @@ class _MainScreenState extends State<MainScreen> {
             },
             onOverlayDoubleTap: () => _openDetailView(context),
             child: Scaffold(
-              appBar: AppBar(
-                title: Text(AppLocalizations.of(context)?.trafficLightMonitor ?? 'Traffic Light Monitor'),
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.history),
-                    onPressed: () => _navigateToEventLog(context),
-                    tooltip: AppLocalizations.of(context)?.eventLog ?? 'Event Log',
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () => _navigateToSettings(context),
-                    tooltip: AppLocalizations.of(context)?.settings ?? 'Settings',
-                  ),
-                ],
-              ),
               body: _buildBody(context, trafficProvider, settings),
               floatingActionButton: _buildFloatingActionButtons(context, trafficProvider, settings),
             ),
