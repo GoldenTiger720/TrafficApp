@@ -19,6 +19,13 @@ class TrafficLightOverlayWidget extends StatelessWidget {
         color: Colors.black87,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey[600]!, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

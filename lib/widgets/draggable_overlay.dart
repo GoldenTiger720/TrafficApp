@@ -29,25 +29,43 @@ class DraggableOverlay extends StatefulWidget {
 }
 
 class _DraggableOverlayState extends State<DraggableOverlay> {
-  late double _x;
-  late double _y;
+  late Offset _position;
   bool _isDragging = false;
   bool _hasMoved = false;
+  Offset _pointerOffset = Offset.zero;
 
   @override
   void initState() {
     super.initState();
-    _x = widget.initialX;
-    _y = widget.initialY;
+    // Convert normalized position to actual pixel position
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final screenSize = MediaQuery.of(context).size;
+        setState(() {
+          _position = Offset(
+            widget.initialX * screenSize.width,
+            widget.initialY * screenSize.height,
+          );
+        });
+      }
+    });
+    _position = Offset(widget.initialX, widget.initialY);
   }
 
   @override
   void didUpdateWidget(DraggableOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialX != widget.initialX || oldWidget.initialY != widget.initialY) {
-      setState(() {
-        _x = widget.initialX;
-        _y = widget.initialY;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final screenSize = MediaQuery.of(context).size;
+          setState(() {
+            _position = Offset(
+              widget.initialX * screenSize.width,
+              widget.initialY * screenSize.height,
+            );
+          });
+        }
       });
     }
   }
@@ -56,9 +74,23 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     
+    // Calculate actual widget size after scaling
+    final widgetWidth = 150 * widget.size;
+    final widgetHeight = 250 * widget.size;
+    
+    // Ensure position is in pixels
+    final pixelPosition = _position.dx > 1 ? _position : Offset(
+      _position.dx * screenSize.width,
+      _position.dy * screenSize.height,
+    );
+    
+    // Calculate position - center the widget at the stored position
+    final left = pixelPosition.dx - (widgetWidth / 2);
+    final top = pixelPosition.dy - (widgetHeight / 2);
+    
     return Positioned(
-      left: _x * screenSize.width - (100 * widget.size),
-      top: _y * screenSize.height - (100 * widget.size),
+      left: left,
+      top: top,
       child: GestureDetector(
         onDoubleTap: () {
           if (!_hasMoved) {
@@ -69,24 +101,32 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
           setState(() {
             _isDragging = true;
             _hasMoved = false;
+            // Calculate pointer offset from widget center
+            _pointerOffset = details.localPosition - Offset(widgetWidth / 2, widgetHeight / 2);
           });
         },
         onPanUpdate: (details) {
           setState(() {
             _hasMoved = true;
-            _x = (details.globalPosition.dx + (100 * widget.size)) / screenSize.width;
-            _y = (details.globalPosition.dy + (100 * widget.size)) / screenSize.height;
+            // Update position to where the pointer is, accounting for the offset
+            final newPosition = details.globalPosition - _pointerOffset;
             
-            // Keep overlay within screen bounds
-            _x = _x.clamp(0.1, 0.9);
-            _y = _y.clamp(0.1, 0.9);
+            // Clamp to screen bounds
+            _position = Offset(
+              newPosition.dx.clamp(widgetWidth / 2, screenSize.width - widgetWidth / 2),
+              newPosition.dy.clamp(widgetHeight / 2, screenSize.height - widgetHeight / 2),
+            );
           });
         },
         onPanEnd: (details) {
           setState(() {
             _isDragging = false;
           });
-          widget.onPositionChanged?.call(_x, _y);
+          // Convert back to normalized coordinates for storage
+          final normalizedX = _position.dx / screenSize.width;
+          final normalizedY = _position.dy / screenSize.height;
+          widget.onPositionChanged?.call(normalizedX, normalizedY);
+          
           // Reset moved flag after a delay to allow double-tap detection
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
@@ -98,17 +138,19 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: _isDragging ? 0 : 200),
-          transform: Matrix4.identity()..scale(widget.size),
-          child: AnimatedOpacity(
-            opacity: widget.transparency,
-            duration: const Duration(milliseconds: 200),
-            child: Material(
-              type: MaterialType.transparency,
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxWidth: 150,
-                  maxHeight: 250,
-                ),
+          child: Transform.scale(
+            scale: widget.size,
+            alignment: Alignment.center,
+            child: AnimatedOpacity(
+              opacity: widget.transparency,
+              duration: const Duration(milliseconds: 200),
+              child: Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  constraints: const BoxConstraints(
+                    maxWidth: 150,
+                    maxHeight: 250,
+                  ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: _isDragging ? [
@@ -152,6 +194,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
                 ),
               ),
             ),
+          ),
           ),
         ),
       ),
