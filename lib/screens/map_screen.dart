@@ -227,60 +227,6 @@ class _MapScreenState extends State<MapScreen>
                 },
               ),
             ),
-          
-          // Traffic Light Controls
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: Card(
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n?.trafficControl ?? 'Traffic Control',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n?.tapToAddTrafficLight ?? 'Tap on the map to add traffic light markers',
-                      style: Theme.of(context).textTheme.bodySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: _clearMarkers,
-                          icon: const Icon(Icons.clear),
-                          label: Text(l10n?.clear ?? 'Clear'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: _getCurrentLocation,
-                          icon: const Icon(Icons.refresh),
-                          label: Text(l10n?.refresh ?? 'Refresh'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
