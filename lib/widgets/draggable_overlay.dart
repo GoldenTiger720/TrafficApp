@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/traffic_light_state.dart';
-import 'traffic_light_widget.dart';
+import 'traffic_light_overlay_widget.dart';
 
 class DraggableOverlay extends StatefulWidget {
   final TrafficLightState trafficLightState;
@@ -106,8 +106,8 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
               type: MaterialType.transparency,
               child: Container(
                 constraints: const BoxConstraints(
-                  maxWidth: 200,
-                  maxHeight: 300,
+                  maxWidth: 150,
+                  maxHeight: 250,
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
@@ -127,13 +127,9 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
                 ),
                 child: Stack(
                   children: [
-                    SingleChildScrollView(
-                      child: TrafficLightWidget(
-                        state: widget.trafficLightState,
-                        isMinimalistic: widget.isMinimalistic,
-                        showCountdown: !widget.isMinimalistic,
-                        showSigns: !widget.isMinimalistic,
-                      ),
+                    TrafficLightOverlayWidget(
+                      state: widget.trafficLightState,
+                      showCountdown: true,
                     ),
                   if (_isDragging)
                     Positioned(
