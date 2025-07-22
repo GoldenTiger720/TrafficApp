@@ -77,12 +77,15 @@ class _MainScreenState extends State<MainScreen> {
                         _buildConnectionStatus(context, trafficProvider),
                         const SizedBox(height: 32),
                       ],
-                      TrafficLightWidget(
-                        state: trafficProvider.currentState,
-                        isMinimalistic: settings.displayMode == DisplayMode.minimalistic,
-                        onLongPress: () => _toggleDisplayMode(context),
-                        onDoubleTap: () => _openDetailView(context),
-                      ),
+                      if (settings.displayMode == DisplayMode.minimalistic)
+                        _buildMinimalisticLayout(context, trafficProvider, settings)
+                      else
+                        TrafficLightWidget(
+                          state: trafficProvider.currentState,
+                          isMinimalistic: false,
+                          onLongPress: () => _toggleDisplayMode(context),
+                          onDoubleTap: () => _openDetailView(context),
+                        ),
                       const SizedBox(height: 32),
                       if (trafficProvider.demoMode)
                         _buildDemoModeControls(context, trafficProvider),
@@ -277,6 +280,79 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildMinimalisticLayout(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TrafficLightWidget(
+          state: trafficProvider.currentState,
+          isMinimalistic: true,
+          showCountdown: false, // Don't show countdown inside the widget
+          onLongPress: () => _toggleDisplayMode(context),
+          onDoubleTap: () => _openDetailView(context),
+        ),
+        const SizedBox(width: 16),
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0), // Align timer with traffic light top
+          child: _buildExternalTimer(context, trafficProvider.currentState),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExternalTimer(BuildContext context, TrafficLightState state) {
+    final countdown = state.countdownSeconds ?? 0; // Default to 0 if null
+    final color = _getTimerColor(state.currentColor);
+    
+    return Container(
+      width: 80, // Fixed width
+      height: 80, // Fixed height - perfect circle
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        shape: BoxShape.circle, // Always circular
+        border: Border.all(color: color, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.timer,
+            color: color,
+            size: 16,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '$countdown',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getTimerColor(TrafficLightColor color) {
+    switch (color) {
+      case TrafficLightColor.red:
+        return Colors.red;
+      case TrafficLightColor.yellow:
+        return Colors.amber;
+      case TrafficLightColor.green:
+        return Colors.green;
+    }
   }
 
   Widget _buildFloatingActionButtons(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {

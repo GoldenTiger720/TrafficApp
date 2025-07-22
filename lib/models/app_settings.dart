@@ -22,6 +22,8 @@ class AppSettings {
   final Language language;
   final DisplayMode displayMode;
   final bool demoMode;
+  final int totalDuration;
+  final int countdownDuration;
 
   const AppSettings({
     this.overlayEnabled = true,
@@ -37,6 +39,8 @@ class AppSettings {
     this.language = Language.en,
     this.displayMode = DisplayMode.advanced,
     this.demoMode = false,
+    this.totalDuration = 30,
+    this.countdownDuration = 5,
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> json) =>
@@ -58,6 +62,8 @@ class AppSettings {
     Language? language,
     DisplayMode? displayMode,
     bool? demoMode,
+    int? totalDuration,
+    int? countdownDuration,
   }) {
     return AppSettings(
       overlayEnabled: overlayEnabled ?? this.overlayEnabled,
@@ -73,6 +79,8 @@ class AppSettings {
       language: language ?? this.language,
       displayMode: displayMode ?? this.displayMode,
       demoMode: demoMode ?? this.demoMode,
+      totalDuration: totalDuration ?? this.totalDuration,
+      countdownDuration: countdownDuration ?? this.countdownDuration,
     );
   }
 }

@@ -72,7 +72,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
     final screenSize = MediaQuery.of(context).size;
     
     // Calculate actual widget dimensions after scaling
-    final widgetWidth = 150 * widget.size;
+    final widgetWidth = 200 * widget.size; // Increased width to accommodate timer
     final widgetHeight = 250 * widget.size;
     
     // Calculate top-left position for Positioned widget
@@ -147,7 +147,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
                 type: MaterialType.transparency,
                 child: Container(
                   constraints: const BoxConstraints(
-                    maxWidth: 150,
+                    maxWidth: 200, // Increased to accommodate timer
                     maxHeight: 250,
                   ),
                   decoration: BoxDecoration(
@@ -168,10 +168,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
                   ),
                   child: Stack(
                     children: [
-                      TrafficLightOverlayWidget(
-                        state: widget.trafficLightState,
-                        showCountdown: true,
-                      ),
+                      _buildOverlayContent(),
                       if (_isDragging)
                         Positioned(
                           top: 4,
@@ -198,6 +195,81 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
         ),
       ),
     );
+  }
+
+  Widget _buildOverlayContent() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          flex: 3,
+          child: TrafficLightOverlayWidget(
+            state: widget.trafficLightState,
+            showCountdown: false, // Don't show countdown inside the widget
+          ),
+        ),
+        const SizedBox(width: 6), // Reduced spacing
+        Flexible(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12.0), // Align timer with traffic light top
+            child: _buildOverlayExternalTimer(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOverlayExternalTimer() {
+    final countdown = widget.trafficLightState.countdownSeconds ?? 0; // Default to 0 if null
+    final color = _getTimerColor();
+    
+    return Container(
+      width: 40, // Reduced size for better fit
+      height: 40, // Reduced size for better fit
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        shape: BoxShape.circle, // Always circular
+        border: Border.all(color: color, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 4,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.timer,
+            color: color,
+            size: 8,
+          ),
+          Text(
+            '$countdown',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getTimerColor() {
+    switch (widget.trafficLightState.currentColor) {
+      case TrafficLightColor.red:
+        return Colors.red;
+      case TrafficLightColor.yellow:
+        return Colors.amber;
+      case TrafficLightColor.green:
+        return Colors.green;
+    }
   }
 }
 

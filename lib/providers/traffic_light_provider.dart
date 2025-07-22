@@ -6,6 +6,7 @@ import '../models/event_log.dart';
 import '../services/connection_service.dart';
 import '../services/notification_service.dart';
 import '../services/event_log_service.dart';
+import '../providers/settings_provider.dart';
 
 class TrafficLightProvider extends ChangeNotifier {
   TrafficLightState _currentState = TrafficLightState(
@@ -21,11 +22,13 @@ class TrafficLightProvider extends ChangeNotifier {
   final ConnectionService _connectionService;
   final NotificationService _notificationService;
   final EventLogService _eventLogService;
+  final SettingsProvider _settingsProvider;
 
   TrafficLightProvider(
     this._connectionService,
     this._notificationService,
     this._eventLogService,
+    this._settingsProvider,
   ) {
     _connectionService.dataStream.listen(_handleIncomingData);
     _connectionService.connectionStatusStream.listen(_handleConnectionStatus);
@@ -83,20 +86,64 @@ class TrafficLightProvider extends ChangeNotifier {
 
   void _startDemoMode() {
     _demoTimer?.cancel();
+    _countdownTimer?.cancel();
+    
     final colors = TrafficLightColor.values;
     var currentIndex = 0;
+    final totalDuration = _settingsProvider.settings.totalDuration;
+    final countdownDuration = _settingsProvider.settings.countdownDuration;
     
-    _demoTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    // Start first signal immediately
+    _setDemoSignal(colors[currentIndex % colors.length], totalDuration, countdownDuration);
+    _startCountdownTimer(totalDuration, countdownDuration);
+    
+    _demoTimer = Timer.periodic(Duration(seconds: totalDuration), (timer) {
+      currentIndex++;
       final newColor = colors[currentIndex % colors.length];
-      final newState = TrafficLightState(
-        currentColor: newColor,
-        countdownSeconds: 5,
-        recognizedSigns: _getRandomSigns(),
-        timestamp: DateTime.now(),
+      _setDemoSignal(newColor, totalDuration, countdownDuration);
+      _startCountdownTimer(totalDuration, countdownDuration);
+    });
+  }
+  
+  void _setDemoSignal(TrafficLightColor color, int totalDuration, int countdownDuration) {
+    final newState = TrafficLightState(
+      currentColor: color,
+      countdownSeconds: totalDuration,
+      recognizedSigns: _getRandomSigns(),
+      timestamp: DateTime.now(),
+    );
+    
+    _handleIncomingData(newState);
+  }
+  
+  void _startCountdownTimer(int totalDuration, int countdownDuration) {
+    _countdownTimer?.cancel();
+    int remainingSeconds = totalDuration;
+    
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      remainingSeconds--;
+      
+      if (remainingSeconds <= 0) {
+        timer.cancel();
+        return;
+      }
+      
+      // Only show countdown for the last N seconds
+      int? displaySeconds;
+      if (remainingSeconds <= countdownDuration) {
+        displaySeconds = remainingSeconds;
+      }
+      
+      // Update the state with new countdown
+      final updatedState = TrafficLightState(
+        currentColor: _currentState.currentColor,
+        countdownSeconds: displaySeconds,
+        recognizedSigns: _currentState.recognizedSigns,
+        timestamp: _currentState.timestamp,
       );
       
-      _handleIncomingData(newState);
-      currentIndex++;
+      _currentState = updatedState;
+      notifyListeners();
     });
   }
 

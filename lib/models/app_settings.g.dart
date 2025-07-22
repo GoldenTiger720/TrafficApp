@@ -26,6 +26,8 @@ AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) => AppSettings(
       $enumDecodeNullable(_$DisplayModeEnumMap, json['displayMode']) ??
       DisplayMode.advanced,
   demoMode: json['demoMode'] as bool? ?? false,
+  totalDuration: (json['totalDuration'] as num?)?.toInt() ?? 30,
+  countdownDuration: (json['countdownDuration'] as num?)?.toInt() ?? 5,
 );
 
 Map<String, dynamic> _$AppSettingsToJson(AppSettings instance) =>
@@ -43,6 +45,8 @@ Map<String, dynamic> _$AppSettingsToJson(AppSettings instance) =>
       'language': _$LanguageEnumMap[instance.language]!,
       'displayMode': _$DisplayModeEnumMap[instance.displayMode]!,
       'demoMode': instance.demoMode,
+      'totalDuration': instance.totalDuration,
+      'countdownDuration': instance.countdownDuration,
     };
 
 const _$ConnectionTypeEnumMap = {

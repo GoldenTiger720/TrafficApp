@@ -51,17 +51,19 @@ class TrafficLightApp extends StatelessWidget {
             return provider;
           },
         ),
-        ChangeNotifierProxyProvider3<ConnectionService, NotificationService, EventLogService, TrafficLightProvider>(
+        ChangeNotifierProxyProvider4<ConnectionService, NotificationService, EventLogService, SettingsProvider, TrafficLightProvider>(
           create: (context) => TrafficLightProvider(
             context.read<ConnectionService>(),
             context.read<NotificationService>(),
             context.read<EventLogService>(),
+            context.read<SettingsProvider>(),
           ),
-          update: (context, connectionService, notificationService, eventLogService, previous) =>
+          update: (context, connectionService, notificationService, eventLogService, settingsProvider, previous) =>
               previous ?? TrafficLightProvider(
                 connectionService,
                 notificationService,
                 eventLogService,
+                settingsProvider,
               ),
         ),
       ],

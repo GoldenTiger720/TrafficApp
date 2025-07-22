@@ -14,7 +14,7 @@ class TrafficLightOverlayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12), // Reduced padding for overlay
       decoration: BoxDecoration(
         color: Colors.black87,
         borderRadius: BorderRadius.circular(16),
@@ -27,23 +27,18 @@ class TrafficLightOverlayWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildTrafficLight(),
-          if (showCountdown && state.countdownSeconds != null) ...[
-            const SizedBox(height: 12),
-            _buildCountdownTimer(context),
-          ],
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return _buildTrafficLight();
+        },
       ),
     );
   }
 
   Widget _buildTrafficLight() {
     return Container(
-      width: 80,
-      height: 180,
+      width: 70, // Reduced from 80 for overlay
+      height: 160, // Reduced from 180 for overlay
       decoration: BoxDecoration(
         color: Colors.grey[800],
         borderRadius: BorderRadius.circular(40),
@@ -87,8 +82,8 @@ class TrafficLightOverlayWidget extends StatelessWidget {
     }
 
     return Container(
-      width: 45,
-      height: 45,
+      width: 38, // Reduced from 45 for overlay
+      height: 38, // Reduced from 45 for overlay
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: lightColor,
@@ -111,8 +106,8 @@ class TrafficLightOverlayWidget extends StatelessWidget {
       ),
       child: isActive ? Center(
         child: Container(
-          width: 25,
-          height: 25,
+          width: 20, // Reduced from 25 for overlay
+          height: 20, // Reduced from 25 for overlay
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: lightColor.withOpacity(0.8),
@@ -129,16 +124,16 @@ class TrafficLightOverlayWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCountdownTimer(BuildContext context) {
+  Widget _buildOverlayCountdownTimer(BuildContext context) {
     final countdown = state.countdownSeconds!;
     final color = _getTimerColor();
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), // Even smaller padding
       decoration: BoxDecoration(
         color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color, width: 2),
+        borderRadius: BorderRadius.circular(12), // Smaller radius
+        border: Border.all(color: color, width: 1), // Thinner border
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -146,24 +141,15 @@ class TrafficLightOverlayWidget extends StatelessWidget {
           Icon(
             Icons.timer,
             color: color,
-            size: 16,
+            size: 14, // Smaller icon for overlay
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4), // Smaller spacing
           Text(
             '$countdown',
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          const SizedBox(width: 2),
-          Text(
-            's',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+              fontSize: 14, // Even smaller font for overlay
             ),
           ),
         ],
