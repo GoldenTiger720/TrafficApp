@@ -6,8 +6,8 @@ class DraggableOverlay extends StatefulWidget {
   final TrafficLightState trafficLightState;
   final double transparency;
   final double size;
-  final double initialX;
-  final double initialY;
+  final double initialX; // Normalized coordinates (0-1)
+  final double initialY; // Normalized coordinates (0-1)
   final bool isMinimalistic;
   final Function(double x, double y)? onPositionChanged;
   final VoidCallback? onDoubleTap;
@@ -29,27 +29,20 @@ class DraggableOverlay extends StatefulWidget {
 }
 
 class _DraggableOverlayState extends State<DraggableOverlay> {
-  late Offset _position;
+  late Offset _position; // Always store in pixel coordinates
   bool _isDragging = false;
   bool _hasMoved = false;
-  Offset _pointerOffset = Offset.zero;
+  Offset _dragOffset = Offset.zero;
 
   @override
   void initState() {
     super.initState();
-    // Convert normalized position to actual pixel position
+    // Initialize with a default position, will be updated in postFrameCallback
+    _position = const Offset(0, 0);
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        final screenSize = MediaQuery.of(context).size;
-        setState(() {
-          _position = Offset(
-            widget.initialX * screenSize.width,
-            widget.initialY * screenSize.height,
-          );
-        });
-      }
+      _updatePositionFromNormalized();
     });
-    _position = Offset(widget.initialX, widget.initialY);
   }
 
   @override
@@ -57,36 +50,39 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialX != widget.initialX || oldWidget.initialY != widget.initialY) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          final screenSize = MediaQuery.of(context).size;
-          setState(() {
-            _position = Offset(
-              widget.initialX * screenSize.width,
-              widget.initialY * screenSize.height,
-            );
-          });
-        }
+        _updatePositionFromNormalized();
       });
     }
+  }
+
+  void _updatePositionFromNormalized() {
+    if (!mounted) return;
+    
+    final screenSize = MediaQuery.of(context).size;
+    setState(() {
+      _position = Offset(
+        widget.initialX * screenSize.width,
+        widget.initialY * screenSize.height,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     
-    // Calculate actual widget size after scaling
+    // Calculate actual widget dimensions after scaling
     final widgetWidth = 150 * widget.size;
     final widgetHeight = 250 * widget.size;
     
-    // Ensure position is in pixels
-    final pixelPosition = _position.dx > 1 ? _position : Offset(
-      _position.dx * screenSize.width,
-      _position.dy * screenSize.height,
-    );
-    
-    // Calculate position - center the widget at the stored position
-    final left = pixelPosition.dx - (widgetWidth / 2);
-    final top = pixelPosition.dy - (widgetHeight / 2);
+    // Calculate top-left position for Positioned widget
+    // Center the widget at the stored position
+    final left = (_position.dx - (widgetWidth / 2))
+        .clamp(0.0, screenSize.width - widgetWidth)
+        .toDouble();
+    final top = (_position.dy - (widgetHeight / 2))
+        .clamp(0.0, screenSize.height - widgetHeight)
+        .toDouble();
     
     return Positioned(
       left: left,
@@ -101,20 +97,22 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
           setState(() {
             _isDragging = true;
             _hasMoved = false;
-            // Calculate pointer offset from widget center
-            _pointerOffset = details.localPosition - Offset(widgetWidth / 2, widgetHeight / 2);
+            // Store the offset from the widget center to the touch point
+            _dragOffset = details.localPosition - Offset(widgetWidth / 2, 0);
           });
         },
         onPanUpdate: (details) {
           setState(() {
             _hasMoved = true;
-            // Update position to where the pointer is, accounting for the offset
-            final newPosition = details.globalPosition - _pointerOffset;
             
-            // Clamp to screen bounds
+            // Calculate new center position
+            final newCenterX = details.globalPosition.dx - _dragOffset.dx;
+            final newCenterY = details.globalPosition.dy - _dragOffset.dy;
+            
+            // Clamp to screen bounds (keeping widget fully visible)
             _position = Offset(
-              newPosition.dx.clamp(widgetWidth / 2, screenSize.width - widgetWidth / 2),
-              newPosition.dy.clamp(widgetHeight / 2, screenSize.height - widgetHeight / 2),
+              newCenterX.clamp(widgetWidth / 2, screenSize.width - widgetWidth / 2),
+              newCenterY.clamp(widgetHeight / 2, screenSize.height - widgetHeight / 2),
             );
           });
         },
@@ -122,13 +120,14 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
           setState(() {
             _isDragging = false;
           });
+          
           // Convert back to normalized coordinates for storage
           final normalizedX = _position.dx / screenSize.width;
           final normalizedY = _position.dy / screenSize.height;
           widget.onPositionChanged?.call(normalizedX, normalizedY);
           
           // Reset moved flag after a delay to allow double-tap detection
-          Future.delayed(const Duration(milliseconds: 300), () {
+          Future.delayed(const Duration(milliseconds: 100), () {
             if (mounted) {
               setState(() {
                 _hasMoved = false;
@@ -151,50 +150,50 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
                     maxWidth: 150,
                     maxHeight: 250,
                   ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: _isDragging ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ] : [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 5,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    TrafficLightOverlayWidget(
-                      state: widget.trafficLightState,
-                      showCountdown: true,
-                    ),
-                  if (_isDragging)
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Icon(
-                          Icons.drag_indicator,
-                          color: Colors.white,
-                          size: 16,
-                        ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: _isDragging ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 10,
+                        spreadRadius: 2,
                       ),
-                    ),
-                  ],
+                    ] : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 5,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      TrafficLightOverlayWidget(
+                        state: widget.trafficLightState,
+                        showCountdown: true,
+                      ),
+                      if (_isDragging)
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.drag_indicator,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
           ),
         ),
       ),
@@ -202,6 +201,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
   }
 }
 
+// OverlayManager remains the same
 class OverlayManager extends StatelessWidget {
   final Widget child;
   final bool overlayEnabled;
