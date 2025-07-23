@@ -237,21 +237,19 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                     child: _buildAdvancedTrafficLight(),
                   ),
                   
-                  // Circular timer (positioned next to traffic light)
-                  if (widget.showCountdown && widget.state.countdownSeconds != null) ...[
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20.0), // Move timer up by 20 pixels
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: availableWidth * 0.35, // Limit timer width
-                          ),
-                          child: _buildCircularTimer(context),
+                  // Circular timer (positioned next to traffic light) - Always shown in advanced mode
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20.0), // Move timer up by 20 pixels
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: availableWidth * 0.35, // Limit timer width
                         ),
+                        child: _buildCircularTimer(context),
                       ),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ] else ...[
@@ -259,10 +257,9 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
               Column(
                 children: [
                   _buildAdvancedTrafficLight(),
-                  if (widget.showCountdown && widget.state.countdownSeconds != null) ...[
-                    const SizedBox(height: 8),
-                    _buildCircularTimer(context),
-                  ],
+                  // Always show timer in advanced mode - vertical layout
+                  const SizedBox(height: 8),
+                  _buildCircularTimer(context),
                 ],
               ),
             ],
@@ -277,7 +274,8 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   }
 
   Widget _buildCircularTimer(BuildContext context) {
-    final countdown = widget.state.countdownSeconds!;
+    // Use countdown if available, otherwise show 0
+    final countdown = widget.state.countdownSeconds ?? 0;
     final color = _getTimerColor();
     
     return LayoutBuilder(
