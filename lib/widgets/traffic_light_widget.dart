@@ -225,53 +225,32 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Traffic light with timer - responsive layout
-            if (availableWidth > 200) ...[
-              // Horizontal layout for wider screens
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Main traffic light
-                  Flexible(
-                    child: _buildAdvancedTrafficLight(),
-                  ),
-                  
-                  // Circular timer (positioned next to traffic light) - Always shown in advanced mode
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0), // Move timer up by 20 pixels
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: availableWidth * 0.35, // Limit timer width
+            // Traffic light with floating timer overlay
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Main traffic light
+                _buildAdvancedTrafficLight(),
+                
+                // Floating timer overlay (positioned at top-right of traffic light)
+                Positioned(
+                  top: -15, // Float above the traffic light
+                  right: -25, // Position to the right side
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
                         ),
-                        child: _buildCircularTimer(context),
-                      ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ] else ...[
-              // Compact layout for narrow screens - timer beside traffic light
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Traffic light
-                  Flexible(
-                    flex: 2,
-                    child: _buildAdvancedTrafficLight(),
-                  ),
-                  // Timer beside traffic light
-                  const SizedBox(width: 12),
-                  Flexible(
-                    flex: 1,
                     child: _buildCircularTimer(context),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
             
             // Current status indicator
             const SizedBox(height: 8), // Reduced spacing
@@ -334,32 +313,10 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: color,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18, // Smaller font
-                  ),
-                ),
-                Text(
-                  's',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 32, // Smaller font
                   ),
                 ),
               ],
-            ),
-          ),
-          
-          // Timer icon at top
-          Positioned(
-            top: 8,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Icon(
-                Icons.timer,
-                color: color,
-                size: 16,
-              ),
             ),
           ),
         ],
