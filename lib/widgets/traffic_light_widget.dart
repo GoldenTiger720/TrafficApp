@@ -125,7 +125,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     
     return ConstrainedBox(
       constraints: const BoxConstraints(
-        maxHeight: 550, // Reduced height to fit better
+        maxHeight: 900, // Increased height for better display
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -162,7 +162,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12), // Smaller radius
-        border: Border.all(color: Colors.grey[700]!, width: 2),
+        border: Border.all(color: Colors.grey[700]!, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
@@ -697,7 +697,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Widget _buildSecondaryInformation(BuildContext context) {
     return ConstrainedBox(
       constraints: const BoxConstraints(
-        maxHeight: 150, // Further reduced height
+        maxHeight: 320, // Increased height for SIGNS card
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1154,8 +1154,8 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
 
   Widget _buildAdvancedTrafficLight() {
     return Container(
-      width: 75, // Reduced from 90
-      height: 170, // Reduced from 200
+      width: 95, // Increased from 75
+      height: 320, // Increased from 170
       decoration: BoxDecoration(
         color: Colors.grey[800],
         borderRadius: BorderRadius.circular(45),
@@ -1199,8 +1199,8 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     }
 
     return Container(
-      width: 42, // Reduced from 50
-      height: 42, // Reduced from 50
+      width: 55, // Increased from 42
+      height: 55, // Increased from 42
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: lightColor,
@@ -1690,7 +1690,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   
   Widget _buildCompactRoadSurface() {
     return Container(
-      height: 20, // Smaller height
+      height: 40, // Increased height for road display
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.grey[850],

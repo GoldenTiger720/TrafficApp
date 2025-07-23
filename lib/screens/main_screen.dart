@@ -67,30 +67,46 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             _buildStatusBar(context, trafficProvider),
             Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      if (settings.displayMode == DisplayMode.minimalistic)
-                        _buildMinimalisticLayout(context, trafficProvider, settings)
-                      else
-                        TrafficLightWidget(
-                          state: trafficProvider.currentState,
-                          isMinimalistic: false,
-                          onLongPress: () => _toggleDisplayMode(context),
-                          onDoubleTap: () => _openDetailView(context),
+              child: settings.displayMode == DisplayMode.advanced
+                  ? Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.65,
+                                  child: Center(
+                                    child: TrafficLightWidget(
+                                      state: trafficProvider.currentState,
+                                      isMinimalistic: false,
+                                      onLongPress: () => _toggleDisplayMode(context),
+                                      onDoubleTap: () => _openDetailView(context),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                if (trafficProvider.demoMode)
+                                  _buildDemoModeControls(context, trafficProvider),
+                              ],
+                            ),
+                          ),
                         ),
-                      const SizedBox(height: 32),
-                      if (trafficProvider.demoMode)
-                        _buildDemoModeControls(context, trafficProvider),
-                      if (settings.displayMode == DisplayMode.advanced)
-                        _buildAdditionalInfo(context, trafficProvider),
-                    ],
-                  ),
-                ),
-              ),
+                      ],
+                    )
+                  : Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            _buildMinimalisticLayout(context, trafficProvider, settings),
+                          ],
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),
@@ -190,44 +206,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildAdditionalInfo(BuildContext context, TrafficLightProvider trafficProvider) {
-    final state = trafficProvider.currentState;
-    
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context)?.currentStatus ?? 'Current Status',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            _buildInfoRow(context, AppLocalizations.of(context)?.signalColor ?? 'Signal Color', _getColorName(state.currentColor, context)),
-            if (state.countdownSeconds != null)
-              _buildInfoRow(context, AppLocalizations.of(context)?.timeRemaining ?? 'Time Remaining', '${state.countdownSeconds}s'),
-            _buildInfoRow(context, AppLocalizations.of(context)?.lastUpdate ?? 'Last Update', _formatTimestamp(state.timestamp, context)),
-            if (state.recognizedSigns.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context)?.recognizedSigns ?? 'Recognized Signs',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: 4),
-              Wrap(
-                spacing: 4,
-                children: state.recognizedSigns.map((sign) => Chip(
-                  label: Text(sign.name.toUpperCase()),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                )).toList(),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
