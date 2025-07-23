@@ -234,8 +234,8 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 
                 // Floating timer overlay (positioned at top-right of traffic light)
                 Positioned(
-                  top: -15, // Float above the traffic light
-                  right: -25, // Position to the right side
+                  top: 5, // Float above the traffic light
+                  right: -80, // Position further to the right side
                   child: Container(
                     decoration: BoxDecoration(
                       boxShadow: [
@@ -327,16 +327,17 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   }
 
   Widget _buildCurrentStatusIndicator(BuildContext context) {
-    return Flexible(
+    return SizedBox(
+      width: 120, // Fixed width to prevent dynamic resizing
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // Reduced padding
         decoration: BoxDecoration(
           color: _getStatusColor().withOpacity(0.2),
-          borderRadius: BorderRadius.circular(16), // Smaller radius
+          borderRadius: BorderRadius.circular(8), // Smaller radius
           border: Border.all(color: _getStatusColor(), width: 2),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center, // Center the content
           children: [
             Icon(
               _getStatusIcon(),
@@ -352,6 +353,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                   fontWeight: FontWeight.bold,
                   fontSize: 12, // Smaller font
                 ),
+                textAlign: TextAlign.center, // Center align text
                 overflow: TextOverflow.ellipsis, // Handle overflow
               ),
             ),
