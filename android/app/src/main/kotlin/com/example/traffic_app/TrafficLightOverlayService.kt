@@ -1,0 +1,179 @@
+package com.example.traffic_app
+
+import android.app.*
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.PixelFormat
+import android.os.Build
+import android.os.IBinder
+import android.view.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.app.NotificationCompat
+import kotlin.math.abs
+
+class TrafficLightOverlayService : Service() {
+    
+    private lateinit var windowManager: WindowManager
+    private lateinit var overlayView: View
+    private lateinit var params: WindowManager.LayoutParams
+    
+    private var initialX = 0
+    private var initialY = 0
+    private var initialTouchX = 0f
+    private var initialTouchY = 0f
+    
+    private lateinit var redLight: View
+    private lateinit var yellowLight: View
+    private lateinit var greenLight: View
+    private lateinit var timerText: TextView
+    
+    private var currentColor = "red"
+    private var countdownSeconds = 0
+    
+    companion object {
+        const val CHANNEL_ID = "TrafficLightOverlayChannel"
+        const val NOTIFICATION_ID = 1
+        
+        const val ACTION_UPDATE_STATE = "com.example.traffic_app.UPDATE_STATE"
+        const val EXTRA_COLOR = "color"
+        const val EXTRA_COUNTDOWN = "countdown"
+    }
+    
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+    }
+    
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_UPDATE_STATE -> {
+                currentColor = intent.getStringExtra(EXTRA_COLOR) ?: "red"
+                countdownSeconds = intent.getIntExtra(EXTRA_COUNTDOWN, 0)
+                updateTrafficLight()
+            }
+            else -> {
+                startForeground(NOTIFICATION_ID, createNotification())
+                createOverlayView()
+            }
+        }
+        return START_STICKY
+    }
+    
+    override fun onBind(intent: Intent?): IBinder? = null
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::overlayView.isInitialized) {
+            windowManager.removeView(overlayView)
+        }
+    }
+    
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Traffic Light Overlay",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Traffic light overlay service"
+                setShowBadge(false)
+            }
+            
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+    
+    private fun createNotification(): Notification {
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            packageManager.getLaunchIntentForPackage(packageName),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Traffic Light Overlay")
+            .setContentText("Overlay is active")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .build()
+    }
+    
+    private fun createOverlayView() {
+        val layoutType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+        
+        params = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            layoutType,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = 100
+            y = 100
+        }
+        
+        overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_traffic_light, null)
+        
+        redLight = overlayView.findViewById(R.id.red_light)
+        yellowLight = overlayView.findViewById(R.id.yellow_light)
+        greenLight = overlayView.findViewById(R.id.green_light)
+        timerText = overlayView.findViewById(R.id.timer_text)
+        
+        updateTrafficLight()
+        
+        overlayView.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialX = params.x
+                    initialY = params.y
+                    initialTouchX = event.rawX
+                    initialTouchY = event.rawY
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    params.x = initialX + (event.rawX - initialTouchX).toInt()
+                    params.y = initialY + (event.rawY - initialTouchY).toInt()
+                    windowManager.updateViewLayout(overlayView, params)
+                    true
+                }
+                else -> false
+            }
+        }
+        
+        windowManager.addView(overlayView, params)
+    }
+    
+    private fun updateTrafficLight() {
+        if (!::overlayView.isInitialized) return
+        
+        redLight.setBackgroundResource(
+            if (currentColor == "red") R.drawable.light_on_red else R.drawable.light_off
+        )
+        yellowLight.setBackgroundResource(
+            if (currentColor == "yellow") R.drawable.light_on_yellow else R.drawable.light_off
+        )
+        greenLight.setBackgroundResource(
+            if (currentColor == "green") R.drawable.light_on_green else R.drawable.light_off
+        )
+        
+        timerText.text = countdownSeconds.toString()
+        timerText.setTextColor(when (currentColor) {
+            "red" -> Color.RED
+            "yellow" -> Color.YELLOW
+            "green" -> Color.GREEN
+            else -> Color.WHITE
+        })
+    }
+}

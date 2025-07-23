@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/traffic_light_state.dart';
 import 'traffic_light_overlay_widget.dart';
+import 'package:window_manager/window_manager.dart';
+import 'dart:io';
+import '../services/overlay_service.dart';
 
 class DraggableOverlay extends StatefulWidget {
   final TrafficLightState trafficLightState;
@@ -42,7 +45,15 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updatePositionFromNormalized();
+      _ensureAlwaysOnTop();
     });
+  }
+  
+  void _ensureAlwaysOnTop() async {
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      await windowManager.setAlwaysOnTop(true);
+      await windowManager.setSkipTaskbar(false);
+    }
   }
 
   @override
@@ -53,6 +64,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
         _updatePositionFromNormalized();
       });
     }
+    _ensureAlwaysOnTop();
   }
 
   void _updatePositionFromNormalized() {
@@ -273,8 +285,8 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
   }
 }
 
-// OverlayManager remains the same
-class OverlayManager extends StatelessWidget {
+// OverlayManager with always-on-top support
+class OverlayManager extends StatefulWidget {
   final Widget child;
   final bool overlayEnabled;
   final TrafficLightState trafficLightState;
@@ -301,20 +313,99 @@ class OverlayManager extends StatelessWidget {
   });
 
   @override
+  State<OverlayManager> createState() => _OverlayManagerState();
+}
+
+class _OverlayManagerState extends State<OverlayManager> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    if (widget.overlayEnabled) {
+      _ensureAlwaysOnTop();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    if (Platform.isAndroid && widget.overlayEnabled) {
+      // Stop Android overlay service when disposing
+      OverlayService.stopOverlayService();
+    }
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(OverlayManager oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.overlayEnabled != oldWidget.overlayEnabled) {
+      if (widget.overlayEnabled) {
+        _ensureAlwaysOnTop();
+      } else if (Platform.isAndroid) {
+        // Stop Android overlay service
+        OverlayService.stopOverlayService();
+      }
+    }
+    
+    // Update overlay state on Android
+    if (Platform.isAndroid && widget.overlayEnabled && OverlayService.isServiceRunning) {
+      OverlayService.updateOverlayState(widget.trafficLightState);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (widget.overlayEnabled) {
+      switch (state) {
+        case AppLifecycleState.resumed:
+          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+            _ensureAlwaysOnTop();
+          } else if (Platform.isAndroid) {
+            // Update Android overlay service with current state
+            OverlayService.updateOverlayState(widget.trafficLightState);
+          }
+          break;
+        case AppLifecycleState.inactive:
+        case AppLifecycleState.paused:
+        case AppLifecycleState.detached:
+        case AppLifecycleState.hidden:
+          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+            // Keep always on top even when app is in background
+            _ensureAlwaysOnTop();
+          }
+          // On Android, the service continues running in background automatically
+          break;
+      }
+    }
+  }
+
+  void _ensureAlwaysOnTop() async {
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      await windowManager.setAlwaysOnTop(true);
+      await windowManager.setSkipTaskbar(false);
+    } else if (Platform.isAndroid && widget.overlayEnabled) {
+      // Start Android overlay service
+      await OverlayService.startOverlayService();
+      await OverlayService.updateOverlayState(widget.trafficLightState);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        child,
-        if (overlayEnabled)
+        widget.child,
+        if (widget.overlayEnabled)
           DraggableOverlay(
-            trafficLightState: trafficLightState,
-            transparency: transparency,
-            size: size,
-            initialX: positionX,
-            initialY: positionY,
-            isMinimalistic: isMinimalistic,
-            onPositionChanged: onPositionChanged,
-            onDoubleTap: onOverlayDoubleTap,
+            trafficLightState: widget.trafficLightState,
+            transparency: widget.transparency,
+            size: widget.size,
+            initialX: widget.positionX,
+            initialY: widget.positionY,
+            isMinimalistic: widget.isMinimalistic,
+            onPositionChanged: widget.onPositionChanged,
+            onDoubleTap: widget.onOverlayDoubleTap,
           ),
       ],
     );

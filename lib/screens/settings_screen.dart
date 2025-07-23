@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 import '../models/app_settings.dart';
 import '../providers/settings_provider.dart';
 import '../providers/traffic_light_provider.dart';
 import '../services/connection_service.dart';
 import '../services/event_log_service.dart';
+import '../services/overlay_service.dart';
 import '../models/traffic_light_state.dart';
 import '../l10n/app_localizations.dart';
 
@@ -18,6 +20,35 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   List<String> _availableDevices = [];
   bool _isScanning = false;
+  bool _hasOverlayPermission = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOverlayPermission();
+  }
+
+  Future<void> _checkOverlayPermission() async {
+    if (Platform.isAndroid) {
+      final hasPermission = await OverlayService.checkOverlayPermission();
+      setState(() {
+        _hasOverlayPermission = hasPermission;
+      });
+    } else {
+      setState(() {
+        _hasOverlayPermission = true;
+      });
+    }
+  }
+
+  Future<void> _requestOverlayPermission() async {
+    if (Platform.isAndroid) {
+      await OverlayService.requestOverlayPermission();
+      // Check again after some delay
+      await Future.delayed(const Duration(seconds: 1));
+      _checkOverlayPermission();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +67,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSection(
                 AppLocalizations.of(context)?.overlaySettings ?? 'Overlay Settings',
                 [
+                  if (Platform.isAndroid) ...[
+                    ListTile(
+                      title: const Text('Overlay Permission'),
+                      subtitle: Text(_hasOverlayPermission 
+                          ? 'Permission granted' 
+                          : 'Permission required for background overlay'),
+                      trailing: _hasOverlayPermission
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : ElevatedButton(
+                              onPressed: _requestOverlayPermission,
+                              child: const Text('Grant Permission'),
+                            ),
+                    ),
+                  ],
                   _buildSwitchTile(
                     AppLocalizations.of(context)?.enableOverlay ?? 'Enable Overlay',
                     settings.overlayEnabled,

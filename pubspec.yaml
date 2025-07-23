@@ -75,6 +75,9 @@ dependencies:
   # Animations
   animations: ^2.0.8
   lottie: ^2.7.0
+  
+  # Window management for desktop
+  window_manager: ^0.3.7
 
 dev_dependencies:
   flutter_test:
