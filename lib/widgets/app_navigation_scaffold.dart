@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
-import 'modern_navigation_drawer.dart';
+import 'bottom_navigation_bar.dart';
 import '../screens/main_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/event_log_screen.dart';
@@ -40,6 +40,7 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -53,10 +54,6 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
           ),
         ),
       ),
-      drawer: ModernNavigationDrawer(
-        currentRoute: _currentRoute,
-        onRouteSelected: _onRouteSelected,
-      ),
       body: PageTransitionSwitcher(
         duration: const Duration(milliseconds: 300),
         transitionBuilder: (child, animation, secondaryAnimation) {
@@ -68,6 +65,10 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
           );
         },
         child: _currentScreen,
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentRoute: _currentRoute,
+        onRouteSelected: _onRouteSelected,
       ),
     );
   }
