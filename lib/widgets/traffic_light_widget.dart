@@ -253,13 +253,22 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 ],
               ),
             ] else ...[
-              // Vertical layout for narrow screens
-              Column(
+              // Compact layout for narrow screens - timer beside traffic light
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildAdvancedTrafficLight(),
-                  // Always show timer in advanced mode - vertical layout
-                  const SizedBox(height: 8),
-                  _buildCircularTimer(context),
+                  // Traffic light
+                  Flexible(
+                    flex: 2,
+                    child: _buildAdvancedTrafficLight(),
+                  ),
+                  // Timer beside traffic light
+                  const SizedBox(width: 12),
+                  Flexible(
+                    flex: 1,
+                    child: _buildCircularTimer(context),
+                  ),
                 ],
               ),
             ],
