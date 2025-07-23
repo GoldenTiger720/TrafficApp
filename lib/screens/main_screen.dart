@@ -69,14 +69,10 @@ class _MainScreenState extends State<MainScreen> {
             Expanded(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      if (settings.displayMode == DisplayMode.advanced) ...[
-                        _buildConnectionStatus(context, trafficProvider),
-                        const SizedBox(height: 32),
-                      ],
                       if (settings.displayMode == DisplayMode.minimalistic)
                         _buildMinimalisticLayout(context, trafficProvider, settings)
                       else
@@ -154,40 +150,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildConnectionStatus(BuildContext context, TrafficLightProvider trafficProvider) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  trafficProvider.isConnected ? Icons.check_circle : Icons.error,
-                  color: trafficProvider.isConnected ? Colors.green : Colors.red,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  trafficProvider.isConnected 
-                      ? (AppLocalizations.of(context)?.deviceConnected ?? 'Device Connected') 
-                      : (AppLocalizations.of(context)?.deviceDisconnected ?? 'Device Disconnected'),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: trafficProvider.isConnected ? Colors.green : Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${AppLocalizations.of(context)?.lastUpdated ?? 'Last updated'}: ${_formatTimestamp(trafficProvider.currentState.timestamp, context)}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildDemoModeControls(BuildContext context, TrafficLightProvider trafficProvider) {
     return Card(
