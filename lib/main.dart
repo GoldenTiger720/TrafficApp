@@ -10,6 +10,7 @@ import 'services/notification_service.dart';
 import 'services/event_log_service.dart';
 import 'services/app_lifecycle_observer.dart';
 import 'widgets/app_navigation_scaffold.dart';
+import 'screens/splash_screen.dart';
 import 'models/app_settings.dart';
 import 'l10n/app_localizations.dart';
 
@@ -79,14 +80,7 @@ class TrafficLightApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return MaterialApp(
-            home: Scaffold(
-              backgroundColor: Colors.black,
-              body: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.blue,
-                ),
-              ),
-            ),
+            home: const SplashScreen(autoNavigate: false),
           );
         }
         
@@ -144,7 +138,7 @@ class TrafficLightApp extends StatelessWidget {
                   Locale('ru', ''),
                   Locale('pl', ''),
                 ],
-                home: const AppNavigationScaffold(initialRoute: '/home'),
+                home: const SplashScreen(),
               );
             },
           ),

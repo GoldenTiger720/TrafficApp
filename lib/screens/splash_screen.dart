@@ -3,7 +3,9 @@ import 'dart:async';
 import '../widgets/app_navigation_scaffold.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final bool autoNavigate;
+  
+  const SplashScreen({super.key, this.autoNavigate = true});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -39,14 +41,23 @@ class _SplashScreenState extends State<SplashScreen>
     // Start progress animation
     _progressController.forward();
     
-    // Navigate to main screen faster
-    _timer = Timer(const Duration(seconds: 1), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AppNavigationScaffold(initialRoute: '/home')),
-        );
-      }
-    });
+    // Only auto-navigate if enabled
+    if (widget.autoNavigate) {
+      _timer = Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const AppNavigationScaffold(initialRoute: '/home')),
+          );
+        }
+      });
+    } else {
+      // For non-auto navigation, just loop the animation
+      _progressController.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _progressController.repeat();
+        }
+      });
+    }
   }
 
   @override
@@ -100,7 +111,83 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(flex: 10),
+                const Spacer(flex: 3),
+                
+                // App Logo/Title Section
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Column(
+                    children: [
+                      // App Icon
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.traffic,
+                          size: 60,
+                          color: Colors.amber,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // App Title
+                      Text(
+                        'Traffic Light Monitor',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          shadows: const [
+                            Shadow(
+                              offset: Offset(0, 2),
+                              blurRadius: 4,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: 8),
+                      
+                      // Subtitle
+                      Text(
+                        'Real-time Traffic Signal Monitoring',
+                        style: TextStyle(
+                          color: Colors.grey[300],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          shadows: const [
+                            Shadow(
+                              offset: Offset(0, 1),
+                              blurRadius: 2,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const Spacer(flex: 2),
                 
                 // Progress Bar Section
                 Container(
