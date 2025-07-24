@@ -136,16 +136,42 @@ class TrafficLightOverlayService : Service() {
             WindowManager.LayoutParams.TYPE_PHONE
         }
         
+        // Calculate scaled dimensions based on actual content
+        val displayMetrics = resources.displayMetrics
+        
+        // Proportional scaling based on size percentage  
+        val additionalScale = 0.5f + (size * 0.4f) // Range: 0.5 to 0.9
+        
+        // Traffic light container: 120dp width + 8dp padding + 8dp margin = 136dp
+        val trafficLightWidth = (120 * displayMetrics.density * size * additionalScale + 16 * displayMetrics.density * size).toInt()
+        // Traffic light container: 360dp height + 8dp padding (top+bottom) = 368dp
+        val trafficLightHeight = (360 * displayMetrics.density * size * additionalScale + 8 * displayMetrics.density * size).toInt()
+        
+        // Timer: 80dp width + 8dp margin = 88dp (but timer is centered vertically) - larger scale
+        val timerCircleScale = 0.7f + (size * 0.25f) // Range: 0.7 to 0.95
+        val timerWidth = (80 * displayMetrics.density * size * additionalScale * timerCircleScale + 8 * displayMetrics.density * size).toInt()
+        val timerHeight = (80 * displayMetrics.density * size * additionalScale * timerCircleScale).toInt()
+        
+        // Total container size: traffic light + timer + root padding
+        val rootPadding = (16 * displayMetrics.density * size).toInt() // 8dp padding on both sides
+        
+        // Ensure timer width is never cut off - add extra padding for timer width
+        val timerWidthPadding = (8 * displayMetrics.density * size).toInt() // Extra padding for timer width
+        val scaledWidth = trafficLightWidth + timerWidth + timerWidthPadding + rootPadding
+        
+        // Ensure timer is never hidden - add extra padding for timer
+        val timerPadding = (16 * displayMetrics.density * size).toInt() // Extra padding for timer
+        val minHeightForTimer = timerHeight + timerPadding
+        val scaledHeight = kotlin.math.max(trafficLightHeight, minHeightForTimer) + rootPadding
+        
         params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            scaledWidth,
+            scaledHeight,
             layoutType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            // Calculate initial position based on screen size and normalized coordinates
-            val displayMetrics = resources.displayMetrics
             x = (positionX).toInt()
             y = (positionY).toInt()
         }
@@ -159,8 +185,10 @@ class TrafficLightOverlayService : Service() {
         
         // Apply initial settings
         overlayView.alpha = transparency
-        overlayView.scaleX = size
-        overlayView.scaleY = size
+        // Size is now handled by WindowManager.LayoutParams dimensions
+        
+        // Scale internal elements based on size
+        scaleInternalElements()
         
         updateTrafficLight()
         
@@ -217,20 +245,90 @@ class TrafficLightOverlayService : Service() {
         })
     }
     
+    private fun scaleInternalElements() {
+        val displayMetrics = resources.displayMetrics
+        
+        // Proportional scaling based on size percentage
+        // At 100% (size=1.0): additionalScale = 0.9 (slightly smaller)
+        // At 30% (size=0.3): additionalScale = 0.5 (much smaller)
+        val additionalScale = 0.5f + (size * 0.4f) // Range: 0.5 to 0.9
+        
+        // Circle scaling also proportional to size
+        // At 100%: circleScale = 0.85 (slightly smaller circles)
+        // At 30%: circleScale = 0.5 (much smaller circles)
+        val circleScale = 0.5f + (size * 0.35f) // Range: 0.5 to 0.85
+        
+        // Scale traffic light container (first LinearLayout child)
+        val rootLayout = overlayView as ViewGroup
+        if (rootLayout.childCount > 0) {
+            val trafficLightContainer = rootLayout.getChildAt(0) as ViewGroup
+            val containerParams = trafficLightContainer.layoutParams
+            containerParams.width = (120 * displayMetrics.density * size * additionalScale).toInt()
+            containerParams.height = (360 * displayMetrics.density * size * additionalScale).toInt()
+            trafficLightContainer.layoutParams = containerParams
+        }
+        
+        // Scale individual traffic lights - make circles smaller
+        val lightSize = (100 * displayMetrics.density * size * additionalScale * circleScale).toInt()
+        listOf(redLight, yellowLight, greenLight).forEach { light ->
+            val lightParams = light.layoutParams
+            lightParams.width = lightSize
+            lightParams.height = lightSize
+            light.layoutParams = lightParams
+        }
+        
+        // Scale timer text - make timer circle larger than other circles
+        val timerCircleScale = 0.7f + (size * 0.25f) // Range: 0.7 to 0.95 (larger than circleScale)
+        val timerSize = (80 * displayMetrics.density * size * additionalScale * timerCircleScale).toInt()
+        val timerParams = timerText.layoutParams
+        timerParams.width = timerSize
+        timerParams.height = timerSize
+        timerText.layoutParams = timerParams
+        
+        // Scale text size - slightly larger text too
+        val textSize = 36 * size * additionalScale * timerCircleScale
+        timerText.textSize = textSize
+    }
+    
     private fun updateOverlaySettings() {
         if (!::overlayView.isInitialized || !::params.isInitialized) return
         
         // Update position
         val displayMetrics = resources.displayMetrics
-        params.x = (positionX ).toInt()
+        params.x = (positionX).toInt()
         params.y = (positionY).toInt()
         
         // Update transparency
         overlayView.alpha = transparency
         
-        // Update size through scaling
-        overlayView.scaleX = size
-        overlayView.scaleY = size
+        // Update size by changing layout parameters based on actual content
+        // Proportional scaling based on size percentage  
+        val additionalScale = 0.5f + (size * 0.4f) // Range: 0.5 to 0.9
+        
+        // Traffic light container: 120dp width + 8dp padding + 8dp margin = 136dp
+        val trafficLightWidth = (120 * displayMetrics.density * size * additionalScale + 16 * displayMetrics.density * size).toInt()
+        // Traffic light container: 360dp height + 8dp padding (top+bottom) = 368dp
+        val trafficLightHeight = (360 * displayMetrics.density * size * additionalScale + 8 * displayMetrics.density * size).toInt()
+        
+        // Timer: 80dp width + 8dp margin = 88dp (but timer is centered vertically) - larger scale
+        val timerCircleScale = 0.7f + (size * 0.25f) // Range: 0.7 to 0.95
+        val timerWidth = (80 * displayMetrics.density * size * additionalScale * timerCircleScale + 8 * displayMetrics.density * size).toInt()
+        val timerHeight = (80 * displayMetrics.density * size * additionalScale * timerCircleScale).toInt()
+        
+        // Total container size: traffic light + timer + root padding
+        val rootPadding = (16 * displayMetrics.density * size).toInt() // 8dp padding on both sides
+        
+        // Ensure timer width is never cut off - add extra padding for timer width
+        val timerWidthPadding = (8 * displayMetrics.density * size).toInt() // Extra padding for timer width
+        params.width = trafficLightWidth + timerWidth + timerWidthPadding + rootPadding
+        
+        // Ensure timer is never hidden - add extra padding for timer
+        val timerPadding = (16 * displayMetrics.density * size).toInt() // Extra padding for timer
+        val minHeightForTimer = timerHeight + timerPadding
+        params.height = kotlin.math.max(trafficLightHeight, minHeightForTimer) + rootPadding
+        
+        // Scale internal elements when size changes
+        scaleInternalElements()
         
         // Apply changes
         windowManager.updateViewLayout(overlayView, params)

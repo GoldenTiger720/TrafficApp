@@ -84,9 +84,31 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     
-    // Calculate actual widget dimensions after scaling (match the actual visual size)
-    final widgetWidth = 200 * widget.size; // Base width 200 scaled by size
-    final widgetHeight = 250 * widget.size; // Base height 250 scaled by size
+    // Calculate actual widget dimensions based on content (match Android calculation)
+    // Proportional scaling based on size percentage
+    // At 100% (size=1.0): additionalScale = 0.9 (slightly smaller)
+    // At 30% (size=0.3): additionalScale = 0.5 (much smaller)
+    final additionalScale = 0.5 + (widget.size * 0.4); // Range: 0.5 to 0.9
+    
+    // Traffic light: 120dp scaled + padding/margin
+    final trafficLightWidth = 120 * widget.size * additionalScale + 16 * widget.size;
+    // Timer: larger scale for timer circle
+    final timerCircleScale = 0.7 + (widget.size * 0.25); // Range: 0.7 to 0.95
+    final timerWidth = 80 * widget.size * additionalScale * timerCircleScale + 8 * widget.size;
+    final rootPadding = 16 * widget.size;
+    
+    // Ensure timer width is never cut off - add extra padding for timer width
+    final timerWidthPadding = 8 * widget.size; // Extra padding for timer width
+    final widgetWidth = trafficLightWidth + timerWidth + timerWidthPadding + rootPadding;
+    
+    // Height: max(traffic light height, timer height) + padding
+    final trafficLightHeight = 360 * widget.size * additionalScale + 8 * widget.size;
+    final timerHeight = 80 * widget.size * additionalScale * timerCircleScale;
+    
+    // Ensure timer is never hidden - add extra padding for timer
+    final timerPadding = 16 * widget.size; // Extra padding for timer
+    final minHeightForTimer = timerHeight + timerPadding;
+    final widgetHeight = (trafficLightHeight > minHeightForTimer ? trafficLightHeight : minHeightForTimer) + rootPadding;
     
     // Calculate top-left position for Positioned widget
     // Center the widget at the stored position
@@ -153,27 +175,22 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: _isDragging ? 0 : 200),
-          child: Transform.scale(
-            scale: widget.size,
-            alignment: Alignment.center,
-            child: AnimatedOpacity(
-              opacity: widget.transparency,
-              duration: const Duration(milliseconds: 200),
-              child: RepaintBoundary( // Optimize repaints
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 200,
-                      maxHeight: 250,
-                    ),
+          child: AnimatedOpacity(
+            opacity: widget.transparency,
+            duration: const Duration(milliseconds: 200),
+            child: RepaintBoundary( // Optimize repaints
+              child: Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  width: widgetWidth,
+                  height: widgetHeight,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16 * widget.size),
                       boxShadow: _isDragging ? [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2), // Reduced opacity
-                          blurRadius: 6, // Reduced blur
-                          spreadRadius: 1, // Reduced spread
+                          blurRadius: 6 * widget.size, // Scaled blur
+                          spreadRadius: 1 * widget.size, // Scaled spread
                         ),
                       ] : [], // Remove shadow when not dragging for better performance
                     ),
@@ -238,9 +255,15 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
     final countdown = widget.trafficLightState.countdownSeconds ?? 0; // Default to 0 if null
     final color = _getTimerColor();
     
+    // Proportional scaling based on size percentage
+    final additionalScale = 0.5 + (widget.size * 0.4); // Range: 0.5 to 0.9
+    
+    // Timer circle scaling - larger than other circles
+    final timerCircleScale = 0.7 + (widget.size * 0.25); // Range: 0.7 to 0.95
+    
     return Container(
-      width: 40, // Reduced size for better fit
-      height: 40, // Reduced size for better fit
+      width: 40 * widget.size * additionalScale * timerCircleScale, // Larger timer circles
+      height: 40 * widget.size * additionalScale * timerCircleScale, // Larger timer circles
       decoration: BoxDecoration(
         color: color.withOpacity(0.2),
         shape: BoxShape.circle, // Always circular
@@ -259,14 +282,14 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
           Icon(
             Icons.timer,
             color: color,
-            size: 8,
+            size: 8 * widget.size * additionalScale * timerCircleScale,
           ),
           Text(
             '$countdown',
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 14 * widget.size * additionalScale * timerCircleScale,
             ),
           ),
         ],
