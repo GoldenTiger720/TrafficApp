@@ -59,17 +59,26 @@ class _MainScreenState extends State<MainScreen> {
             _buildStatusBar(context, trafficProvider),
             Expanded(
               child: settings.displayMode == DisplayMode.advanced
-                  ? Column(
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.65,
-                                  child: Center(
+                  ? LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  // Traffic Light Widget - responsive height
+                                  Container(
+                                    constraints: BoxConstraints(
+                                      maxHeight: constraints.maxHeight * 0.8,
+                                      minHeight: 400,
+                                    ),
                                     child: TrafficLightWidget(
                                       state: trafficProvider.currentState,
                                       isMinimalistic: false,
@@ -77,15 +86,16 @@ class _MainScreenState extends State<MainScreen> {
                                       onDoubleTap: () => _openDetailView(context),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 16),
-                                if (trafficProvider.demoMode)
-                                  _buildDemoModeControls(context, trafficProvider),
-                              ],
+                                  const SizedBox(height: 12),
+                                  if (trafficProvider.demoMode)
+                                    _buildDemoModeControls(context, trafficProvider),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     )
                   : Center(
                       child: SingleChildScrollView(
@@ -160,34 +170,77 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildDemoModeControls(BuildContext context, TrafficLightProvider trafficProvider) {
     return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12), // Reduced padding
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               AppLocalizations.of(context)?.demoModeControls ?? 'Demo Mode Controls',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith( // Smaller title
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)?.testOverlayColorsShort ?? 'Test overlay colors:'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 8), // Reduced spacing
+            Text(
+              AppLocalizations.of(context)?.testOverlayColorsShort ?? 'Test overlay colors:',
+              style: Theme.of(context).textTheme.bodySmall, // Smaller text
+            ),
+            const SizedBox(height: 8), // Reduced spacing
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: () => trafficProvider.testOverlay(TrafficLightColor.red),
-                  child: Text(AppLocalizations.of(context)?.red ?? 'Red', style: const TextStyle(color: Colors.white)),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 8), // Reduced padding
+                        textStyle: const TextStyle(fontSize: 12), // Smaller text
+                      ),
+                      onPressed: () => trafficProvider.testOverlay(TrafficLightColor.red),
+                      child: Text(
+                        AppLocalizations.of(context)?.red ?? 'Red', 
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                  onPressed: () => trafficProvider.testOverlay(TrafficLightColor.yellow),
-                  child: Text(AppLocalizations.of(context)?.yellow ?? 'Yellow', style: const TextStyle(color: Colors.black)),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        padding: const EdgeInsets.symmetric(vertical: 8), // Reduced padding
+                        textStyle: const TextStyle(fontSize: 12), // Smaller text
+                      ),
+                      onPressed: () => trafficProvider.testOverlay(TrafficLightColor.yellow),
+                      child: Text(
+                        AppLocalizations.of(context)?.yellow ?? 'Yellow', 
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  onPressed: () => trafficProvider.testOverlay(TrafficLightColor.green),
-                  child: Text(AppLocalizations.of(context)?.green ?? 'Green', style: const TextStyle(color: Colors.white)),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 8), // Reduced padding
+                        textStyle: const TextStyle(fontSize: 12), // Smaller text
+                      ),
+                      onPressed: () => trafficProvider.testOverlay(TrafficLightColor.green),
+                      child: Text(
+                        AppLocalizations.of(context)?.green ?? 'Green', 
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

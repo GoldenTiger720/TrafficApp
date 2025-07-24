@@ -123,36 +123,44 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Widget _buildAdvancedView(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        maxHeight: 900, // Increased height for better display
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Compact header
-          Text(
-            l10n?.trafficLight ?? 'Traffic Light',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16, // Reduced font size
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Compact header
+                Text(
+                  l10n?.trafficLight ?? 'Traffic Light',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14, // Further reduced font size
+                  ),
+                ),
+                const SizedBox(height: 6), // Further reduced spacing
+                
+                // Central critical information area
+                Flexible(
+                  child: _buildCentralCriticalArea(context),
+                ),
+                
+                // Secondary information: Road signs and lane details
+                if (widget.showSigns) ...[
+                  const SizedBox(height: 6), // Further reduced spacing
+                  Flexible(
+                    child: _buildSecondaryInformation(context),
+                  ),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: 8), // Reduced spacing
-          
-          // Central critical information area
-          _buildCentralCriticalArea(context),
-          
-          // Secondary information: Road signs and lane details
-          if (widget.showSigns) ...[
-            const SizedBox(height: 8), // Reduced spacing
-            Flexible(
-              child: _buildSecondaryInformation(context),
-            ),
-          ],
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -234,15 +242,15 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 
                 // Floating timer overlay (positioned at top-right of traffic light)
                 Positioned(
-                  top: 5, // Float above the traffic light
-                  right: -80, // Position further to the right side
+                  top: -5, // Float higher above the traffic light
+                  right: -70, // Position to the right side
                   child: Container(
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 2,
+                          blurRadius: 6,
+                          spreadRadius: 1,
                         ),
                       ],
                     ),
@@ -661,25 +669,18 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   }
 
   Widget _buildSecondaryInformation(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        maxHeight: 320, // Increased height for SIGNS card
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Compact road signs display
-          Flexible(
-            flex: 1,
-            child: SingleChildScrollView(
-              child: _buildCompactRoadSigns(context),
-            ),
-          ),
-          const SizedBox(height: 4), // Further reduced spacing
-          // Compact road surface representation
-          _buildCompactRoadSurface(),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Fixed height SIGNS card to prevent expansion/contraction
+        SizedBox(
+          height: 160, // Double the previous height
+          child: _buildCompactRoadSigns(context),
+        ),
+        const SizedBox(height: 6),
+        // Compact road surface representation
+        _buildCompactRoadSurface(),
+      ],
     );
   }
 
@@ -1120,16 +1121,16 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
 
   Widget _buildAdvancedTrafficLight() {
     return Container(
-      width: 95, // Increased from 75
-      height: 320, // Increased from 170
+      width: 80, // Reduced from 95
+      height: 220, // Reduced from 320
       decoration: BoxDecoration(
         color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(45),
-        border: Border.all(color: Colors.grey[600]!, width: 3),
+        borderRadius: BorderRadius.circular(40),
+        border: Border.all(color: Colors.grey[600]!, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
+            blurRadius: 8,
             spreadRadius: 2,
           ),
         ],
@@ -1165,8 +1166,8 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     }
 
     return Container(
-      width: 55, // Increased from 42
-      height: 55, // Increased from 42
+      width: 45, // Reduced from 55
+      height: 45, // Reduced from 55
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: lightColor,
@@ -1177,28 +1178,28 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
         boxShadow: isActive ? [
           BoxShadow(
             color: shadowColor.withOpacity(0.6),
-            blurRadius: 20,
-            spreadRadius: 5,
+            blurRadius: 15,
+            spreadRadius: 3,
           ),
           BoxShadow(
             color: shadowColor.withOpacity(0.3),
-            blurRadius: 40,
-            spreadRadius: 10,
+            blurRadius: 30,
+            spreadRadius: 6,
           ),
         ] : null,
       ),
       child: isActive ? Center(
         child: Container(
-          width: 30,
-          height: 30,
+          width: 25,
+          height: 25,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: lightColor.withOpacity(0.8),
             boxShadow: [
               BoxShadow(
                 color: Colors.white.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(-5, -5),
+                blurRadius: 6,
+                offset: const Offset(-3, -3),
               ),
             ],
           ),
@@ -1540,15 +1541,15 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(8), // Reduced padding
+      height: double.infinity, // Use full available height
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8), // Smaller radius
-        border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1), // Thinner border
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           // Compact header
           Row(
@@ -1556,46 +1557,57 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
               Icon(
                 Icons.info_outline,
                 color: Colors.blue,
-                size: 14, // Smaller icon
+                size: 14,
               ),
-              const SizedBox(width: 6), // Reduced spacing
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  'SIGNS', // Shorter text
+                  'SIGNS',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: Colors.blue,
                     fontWeight: FontWeight.bold,
-                    fontSize: 12, // Smaller font
+                    fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6), // Reduced spacing
+          const SizedBox(height: 8),
           
-          // Show content based on whether signs are detected
-          if (widget.state.recognizedSigns.isEmpty) ...[
-            // Compact placeholder when no signs detected
-            Center(
-              child: Text(
-                l10n?.noSignsDetected ?? 'No signs',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.blue.withOpacity(0.5),
-                  fontStyle: FontStyle.italic,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ] else ...[
-            // All signs in compact wrapped layout
-            Wrap(
-              spacing: 6, // Reduced spacing
-              runSpacing: 4, // Reduced spacing
-              children: widget.state.recognizedSigns.take(6).map((sign) => // Limit to 6 signs
-                _buildCompactRoadSignChip(sign, context)
-              ).toList(),
-            ),
-          ],
+          // Expandable content area with scroll
+          Expanded(
+            child: widget.state.recognizedSigns.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.visibility_off,
+                          size: 24,
+                          color: Colors.blue.withOpacity(0.3),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n?.noSignsDetected ?? 'No signs detected',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.blue.withOpacity(0.5),
+                            fontStyle: FontStyle.italic,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: widget.state.recognizedSigns.map((sign) => 
+                        _buildCompactRoadSignChip(sign, context)
+                      ).toList(),
+                    ),
+                  ),
+          ),
         ],
       ),
     );
