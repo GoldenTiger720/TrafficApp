@@ -23,6 +23,12 @@ class SettingsProvider extends ChangeNotifier {
       try {
         final Map<String, dynamic> json = jsonDecode(settingsJson);
         _settings = AppSettings.fromJson(json);
+        
+        // Clamp overlay size to new maximum of 1.0
+        if (_settings.overlaySize > 1.0) {
+          _settings = _settings.copyWith(overlaySize: 1.0);
+          await _saveSettings();
+        }
       } catch (e) {
         debugPrint('Error loading settings: $e');
         debugPrint('Clearing corrupted settings...');
@@ -58,7 +64,9 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   Future<void> updateOverlaySize(double size) async {
-    _settings = _settings.copyWith(overlaySize: size);
+    // Ensure size is within valid range
+    final clampedSize = size.clamp(0.5, 1.0);
+    _settings = _settings.copyWith(overlaySize: clampedSize);
     await _saveSettings();
     notifyListeners();
   }

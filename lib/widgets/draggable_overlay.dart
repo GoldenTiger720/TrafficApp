@@ -85,8 +85,8 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
     final screenSize = MediaQuery.of(context).size;
     
     // Calculate actual widget dimensions after scaling
-    final widgetWidth = 200 * widget.size; // Increased width to accommodate timer
-    final widgetHeight = 250 * widget.size;
+    final widgetWidth = 400 * widget.size; // Doubled base width from 200 to 400
+    final widgetHeight = 500 * widget.size; // Doubled base height from 250 to 500
     
     // Calculate top-left position for Positioned widget
     // Center the widget at the stored position
