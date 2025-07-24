@@ -125,14 +125,20 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
     
     final l10n = AppLocalizations.of(context);
     return [
-      IconButton(
-        icon: const Icon(Icons.share),
-        onPressed: _exportEventLog,
-        tooltip: l10n?.exportEventLog ?? 'Export Event Log',
-      ),
       PopupMenuButton<String>(
         onSelected: _handleMenuAction,
         itemBuilder: (BuildContext context) => [
+          PopupMenuItem<String>(
+            value: 'share',
+            child: Row(
+              children: [
+                const Icon(Icons.share),
+                const SizedBox(width: 8),
+                Text(l10n?.exportEventLog ?? 'Export Event Log'),
+              ],
+            ),
+          ),
+          const PopupMenuDivider(),
           PopupMenuItem<String>(
             value: 'clear',
             child: Row(
@@ -159,8 +165,13 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
   }
 
   Future<void> _handleMenuAction(String action) async {
-    if (action == 'clear') {
-      _showClearDialog();
+    switch (action) {
+      case 'share':
+        _exportEventLog();
+        break;
+      case 'clear':
+        _showClearDialog();
+        break;
     }
   }
 
