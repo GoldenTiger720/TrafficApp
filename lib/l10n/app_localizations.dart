@@ -697,6 +697,110 @@ class AppLocalizations {
     'pl': 'Nawiguj',
   });
 
+  // Overlay Permission
+  String get overlayPermission => _localizedString('overlay_permission', {
+    'en': 'Overlay Permission',
+    'ru': 'Разрешение на наложение',
+    'pl': 'Uprawnienie nakładki',
+  });
+
+  String get permissionGranted => _localizedString('permission_granted', {
+    'en': 'Permission granted',
+    'ru': 'Разрешение предоставлено',
+    'pl': 'Uprawnienie przyznane',
+  });
+
+  String get permissionRequiredForBackgroundOverlay => _localizedString('permission_required_for_background_overlay', {
+    'en': 'Permission required for background overlay',
+    'ru': 'Требуется разрешение для фонового наложения',
+    'pl': 'Wymagane uprawnienie dla nakładki w tle',
+  });
+
+  String get grantPermission => _localizedString('grant_permission', {
+    'en': 'Grant Permission',
+    'ru': 'Предоставить разрешение',
+    'pl': 'Przyznaj uprawnienie',
+  });
+
+  // Reset Settings
+  String get resetOverlaySettings => _localizedString('reset_overlay_settings', {
+    'en': 'Reset Overlay Settings',
+    'ru': 'Сбросить настройки наложения',
+    'pl': 'Zresetuj ustawienia nakładki',
+  });
+
+  String get resetTransparencySizeAndPosition => _localizedString('reset_transparency_size_and_position', {
+    'en': 'Reset transparency, size, and position',
+    'ru': 'Сбросить прозрачность, размер и позицию',
+    'pl': 'Zresetuj przezroczystość, rozmiar i pozycję',
+  });
+
+  String get resetOverlay => _localizedString('reset_overlay', {
+    'en': 'Reset Overlay',
+    'ru': 'Сбросить наложение',
+    'pl': 'Zresetuj nakładkę',
+  });
+
+  String get connectionType => _localizedString('connection_type', {
+    'en': 'Connection Type',
+    'ru': 'Тип подключения',
+    'pl': 'Typ połączenia',
+  });
+
+  String get totalDurationSeconds => _localizedString('total_duration_seconds', {
+    'en': 'Total Duration (seconds)',
+    'ru': 'Общая продолжительность (секунды)',
+    'pl': 'Całkowity czas trwania (sekundy)',
+  });
+
+  String get countdownDurationSeconds => _localizedString('countdown_duration_seconds', {
+    'en': 'Countdown Duration (seconds)',
+    'ru': 'Продолжительность обратного отсчёта (секунды)',
+    'pl': 'Czas odliczania (sekundy)',
+  });
+
+  String get resetAllSettings => _localizedString('reset_all_settings', {
+    'en': 'Reset All Settings',
+    'ru': 'Сбросить все настройки',
+    'pl': 'Zresetuj wszystkie ustawienia',
+  });
+
+  String get resetAllSettingsToDefaultValues => _localizedString('reset_all_settings_to_default_values', {
+    'en': 'Reset all settings to default values',
+    'ru': 'Сбросить все настройки к значениям по умолчанию',
+    'pl': 'Zresetuj wszystkie ustawienia do wartości domyślnych',
+  });
+
+  String get resetAll => _localizedString('reset_all', {
+    'en': 'Reset All',
+    'ru': 'Сбросить всё',
+    'pl': 'Zresetuj wszystko',
+  });
+
+  String get resetAllSettingsConfirm => _localizedString('reset_all_settings_confirm', {
+    'en': 'This will reset all settings to their default values. Continue?',
+    'ru': 'Это сбросит все настройки к значениям по умолчанию. Продолжить?',
+    'pl': 'To zresetuje wszystkie ustawienia do wartości domyślnych. Kontynuować?',
+  });
+
+  String get settingsResetToDefaults => _localizedString('settings_reset_to_defaults', {
+    'en': 'Settings reset to defaults',
+    'ru': 'Настройки сброшены к значениям по умолчанию',
+    'pl': 'Ustawienia zresetowane do wartości domyślnych',
+  });
+
+  String get resetOverlaySettingsConfirm => _localizedString('reset_overlay_settings_confirm', {
+    'en': 'This will reset overlay transparency, size, and position to defaults. Continue?',
+    'ru': 'Это сбросит прозрачность, размер и позицию наложения к значениям по умолчанию. Продолжить?',
+    'pl': 'To zresetuje przezroczystość, rozmiar i pozycję nakładki do wartości domyślnych. Kontynuować?',
+  });
+
+  String get overlaySettingsResetToDefaults => _localizedString('overlay_settings_reset_to_defaults', {
+    'en': 'Overlay settings reset to defaults',
+    'ru': 'Настройки наложения сброшены к значениям по умолчанию',
+    'pl': 'Ustawienia nakładki zresetowane do wartości domyślnych',
+  });
+
   String _localizedString(String key, Map<String, String> translations) {
     return translations[locale.languageCode] ?? translations['en'] ?? key;
   }

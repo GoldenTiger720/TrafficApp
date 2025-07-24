@@ -69,15 +69,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 [
                   if (Platform.isAndroid) ...[
                     ListTile(
-                      title: const Text('Overlay Permission'),
+                      title: Text(AppLocalizations.of(context)?.overlayPermission ?? 'Overlay Permission'),
                       subtitle: Text(_hasOverlayPermission 
-                          ? 'Permission granted' 
-                          : 'Permission required for background overlay'),
+                          ? (AppLocalizations.of(context)?.permissionGranted ?? 'Permission granted') 
+                          : (AppLocalizations.of(context)?.permissionRequiredForBackgroundOverlay ?? 'Permission required for background overlay')),
                       trailing: _hasOverlayPermission
                           ? const Icon(Icons.check_circle, color: Colors.green)
                           : ElevatedButton(
                               onPressed: _requestOverlayPermission,
-                              child: const Text('Grant Permission'),
+                              child: Text(AppLocalizations.of(context)?.grantPermission ?? 'Grant Permission'),
                             ),
                     ),
                   ],
@@ -111,11 +111,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   ListTile(
-                    title: const Text('Reset Overlay Settings'),
-                    subtitle: const Text('Reset transparency, size, and position'),
+                    title: Text(AppLocalizations.of(context)?.resetOverlaySettings ?? 'Reset Overlay Settings'),
+                    subtitle: Text(AppLocalizations.of(context)?.resetTransparencySizeAndPosition ?? 'Reset transparency, size, and position'),
                     trailing: ElevatedButton(
                       onPressed: () => _resetOverlaySettings(context, settingsProvider),
-                      child: const Text('Reset Overlay'),
+                      child: Text(AppLocalizations.of(context)?.resetOverlay ?? 'Reset Overlay'),
                     ),
                   ),
                 ],
@@ -124,7 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 AppLocalizations.of(context)?.connectionSettings ?? 'Connection Settings',
                 [
                   _buildDropdownTile<ConnectionType>(
-                    'Connection Type',
+                    AppLocalizations.of(context)?.connectionType ?? 'Connection Type',
                     settings.connectionType,
                     ConnectionType.values,
                     (value) => settingsProvider.updateConnectionType(value!),
@@ -194,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   _buildSliderTile(
-                    'Total Duration (seconds)',
+                    AppLocalizations.of(context)?.totalDurationSeconds ?? 'Total Duration (seconds)',
                     settings.totalDuration.toDouble(),
                     5.0,
                     60.0,
@@ -202,7 +202,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     valueFormatter: (value) => '${value.round()}s',
                   ),
                   _buildSliderTile(
-                    'Countdown Duration (seconds)',
+                    AppLocalizations.of(context)?.countdownDurationSeconds ?? 'Countdown Duration (seconds)',
                     settings.countdownDuration.toDouble(),
                     1.0,
                     settings.totalDuration.toDouble().clamp(1.0, 60.0), // Ensure valid range
@@ -215,11 +215,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     valueFormatter: (value) => '${value.round()}s',
                   ),
                   ListTile(
-                    title: const Text('Reset All Settings'),
-                    subtitle: const Text('Reset all settings to default values'),
+                    title: Text(AppLocalizations.of(context)?.resetAllSettings ?? 'Reset All Settings'),
+                    subtitle: Text(AppLocalizations.of(context)?.resetAllSettingsToDefaultValues ?? 'Reset all settings to default values'),
                     trailing: ElevatedButton(
                       onPressed: () => _resetSettings(context, settingsProvider),
-                      child: const Text('Reset All'),
+                      child: Text(AppLocalizations.of(context)?.resetAll ?? 'Reset All'),
                     ),
                   ),
                   _buildTestControls(context),
@@ -530,8 +530,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset All Settings'),
-        content: const Text('This will reset all settings to their default values. Continue?'),
+        title: Text(AppLocalizations.of(context)?.resetAllSettings ?? 'Reset All Settings'),
+        content: Text(AppLocalizations.of(context)?.resetAllSettingsConfirm ?? 'This will reset all settings to their default values. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -539,7 +539,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Reset'),
+            child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
           ),
         ],
       ),
@@ -549,7 +549,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await settingsProvider.resetToDefaults();
       context.read<TrafficLightProvider>().setDemoMode(false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Settings reset to defaults')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.settingsResetToDefaults ?? 'Settings reset to defaults')),
       );
     }
   }
@@ -558,8 +558,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset Overlay Settings'),
-        content: const Text('This will reset overlay transparency, size, and position to defaults. Continue?'),
+        title: Text(AppLocalizations.of(context)?.resetOverlaySettings ?? 'Reset Overlay Settings'),
+        content: Text(AppLocalizations.of(context)?.resetOverlaySettingsConfirm ?? 'This will reset overlay transparency, size, and position to defaults. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -567,7 +567,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Reset'),
+            child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
           ),
         ],
       ),
@@ -576,7 +576,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (confirmed == true) {
       await settingsProvider.resetOverlaySettings();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Overlay settings reset to defaults')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.overlaySettingsResetToDefaults ?? 'Overlay settings reset to defaults')),
       );
     }
   }
