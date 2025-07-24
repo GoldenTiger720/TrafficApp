@@ -26,7 +26,7 @@ class AppSettings {
   final int countdownDuration;
 
   const AppSettings({
-    this.overlayEnabled = true,
+    this.overlayEnabled = false,
     this.overlayTransparency = 0.8,
     this.overlaySize = 1.0,
     this.overlayPositionX = 0.5,
