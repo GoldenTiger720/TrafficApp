@@ -103,7 +103,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       onLongPress: widget.onLongPress,
       onDoubleTap: widget.onDoubleTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.black87,
           borderRadius: BorderRadius.circular(16),
@@ -123,50 +123,35 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Widget _buildAdvancedView(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Compact header
-                Text(
-                  l10n?.trafficLight ?? 'Traffic Light',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14, // Further reduced font size
-                  ),
-                ),
-                const SizedBox(height: 6), // Further reduced spacing
-                
-                // Central critical information area
-                Flexible(
-                  child: _buildCentralCriticalArea(context),
-                ),
-                
-                // Secondary information: Road signs and lane details
-                if (widget.showSigns) ...[
-                  const SizedBox(height: 6), // Further reduced spacing
-                  Flexible(
-                    child: _buildSecondaryInformation(context),
-                  ),
-                ],
-              ],
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Compact header
+        Text(
+          l10n?.trafficLight ?? 'Traffic Light',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 14, // Further reduced font size
           ),
-        );
-      },
+        ),
+        const SizedBox(height: 4), // Further reduced spacing
+        
+        // Central critical information area
+        _buildCentralCriticalArea(context),
+        
+        // Secondary information: Road signs and lane details
+        if (widget.showSigns) ...[
+          const SizedBox(height: 4), // Further reduced spacing
+          _buildSecondaryInformation(context),
+        ],
+      ],
     );
   }
 
   Widget _buildCentralCriticalArea(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12), // Reduced padding
+      padding: const EdgeInsets.all(8), // Further reduced padding
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12), // Smaller radius
@@ -188,10 +173,13 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Lane markings (left)
+                // Lane markings (left) - moved down by 20px
                 Flexible(
                   flex: 2,
-                  child: _buildEnhancedLaneMarkings(true),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: _buildEnhancedLaneMarkings(true),
+                  ),
                 ),
                 const SizedBox(width: 20),
                 
@@ -202,10 +190,13 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 ),
                 
                 const SizedBox(width: 20),
-                // Lane markings (right)
+                // Lane markings (right) - moved down by 20px
                 Flexible(
                   flex: 2,
-                  child: _buildEnhancedLaneMarkings(false),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: _buildEnhancedLaneMarkings(false),
+                  ),
                 ),
               ],
             );
@@ -214,7 +205,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
               children: [
                 // Central traffic display
                 _buildCentralTrafficDisplay(context),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 // Compact lane information
                 _buildCompactLaneDisplay(context),
               ],
@@ -519,7 +510,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
             ],
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         Text(
           isLeft ? 'LEFT' : 'RIGHT',
           style: TextStyle(
@@ -534,13 +525,13 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
 
   Widget _buildEnhancedLaneMarkings(bool isLeft) {
     return Container(
-      height: 140,
+      height: 93, // Reduced to 2/3 (140 * 2/3 = 93)
       child: Column(
         children: [
           // Lane direction indicator
           Container(
             width: 60,
-            height: 100,
+            height: 67, // Reduced to 2/3 (100 * 2/3 = 67)
             decoration: BoxDecoration(
               color: Colors.grey[850],
               borderRadius: BorderRadius.circular(12),
@@ -674,10 +665,10 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       children: [
         // Fixed height SIGNS card to prevent expansion/contraction
         SizedBox(
-          height: 160, // Double the previous height
+          height: 107, // 2/3 of previous height (160 * 2/3 = 107)
           child: _buildCompactRoadSigns(context),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         // Compact road surface representation
         _buildCompactRoadSurface(),
       ],
@@ -1122,7 +1113,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Widget _buildAdvancedTrafficLight() {
     return Container(
       width: 80, // Reduced from 95
-      height: 220, // Reduced from 320
+      height: 207, // Increased by 40 pixels (167 + 40 = 207)
       decoration: BoxDecoration(
         color: Colors.grey[800],
         borderRadius: BorderRadius.circular(40),
