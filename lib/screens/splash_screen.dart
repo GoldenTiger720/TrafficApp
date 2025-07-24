@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     
     _progressController = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
     
@@ -39,8 +39,8 @@ class _SplashScreenState extends State<SplashScreen>
     // Start progress animation
     _progressController.forward();
     
-    // Navigate to main screen after animation completes
-    _timer = Timer(const Duration(seconds: 3), () {
+    // Navigate to main screen faster
+    _timer = Timer(const Duration(seconds: 1), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const AppNavigationScaffold(initialRoute: '/home')),
@@ -61,29 +61,20 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Fullscreen Background Image
+          // Simple gradient background
           Container(
             width: double.infinity,
             height: double.infinity,
-            child: Image.asset(
-              'assets/images/splash.png',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                // Fallback gradient background if image doesn't exist
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black,
-                        Colors.grey[900]!,
-                        Colors.black,
-                      ],
-                    ),
-                  ),
-                );
-              },
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black,
+                  Colors.grey[900]!,
+                  Colors.black,
+                ],
+              ),
             ),
           ),
           

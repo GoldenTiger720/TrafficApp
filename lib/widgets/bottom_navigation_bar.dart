@@ -53,13 +53,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
               ),
               _buildNavItem(
                 context,
-                icon: Icons.map,
-                label: l10n?.map ?? 'Map',
-                route: '/map',
-                isSelected: currentRoute == '/map',
-              ),
-              _buildNavItem(
-                context,
                 icon: Icons.route,
                 label: l10n?.routes ?? 'Routes',
                 route: '/routes',

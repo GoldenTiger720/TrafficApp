@@ -4,7 +4,6 @@ import 'bottom_navigation_bar.dart';
 import '../screens/main_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/event_log_screen.dart';
-import '../screens/map_screen.dart';
 import '../screens/routes_screen.dart';
 
 class AppNavigationScaffold extends StatefulWidget {
@@ -86,16 +85,14 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
     switch (route) {
       case '/home':
         return const MainScreen();
-      case '/map':
-        return const MapScreen(); // We'll create this next
       case '/routes':
-        return const RoutesScreen(); // We'll create this next
+        return const RoutesScreen();
       case '/event-log':
         return const EventLogScreen();
       case '/settings':
         return const SettingsScreen();
       case '/about':
-        return const AboutScreen(); // We'll create this next
+        return const AboutScreen();
       default:
         return const MainScreen();
     }
@@ -105,8 +102,6 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
     switch (_currentRoute) {
       case '/home':
         return 'Traffic Monitor';
-      case '/map':
-        return 'Map';
       case '/routes':
         return 'Routes';
       case '/event-log':

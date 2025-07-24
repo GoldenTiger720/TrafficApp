@@ -128,22 +128,31 @@ class TrafficLightProvider extends ChangeNotifier {
         return;
       }
       
-      // Only show countdown for the last N seconds
+      // Only show countdown for the last N seconds AND only update UI when needed
       int? displaySeconds;
+      bool shouldUpdate = false;
+      
       if (remainingSeconds <= countdownDuration) {
         displaySeconds = remainingSeconds;
+        shouldUpdate = true;
+      } else if (_currentState.countdownSeconds != null) {
+        // Clear countdown when not in countdown period
+        displaySeconds = null;
+        shouldUpdate = true;
       }
       
-      // Update the state with new countdown
-      final updatedState = TrafficLightState(
-        currentColor: _currentState.currentColor,
-        countdownSeconds: displaySeconds,
-        recognizedSigns: _currentState.recognizedSigns,
-        timestamp: _currentState.timestamp,
-      );
-      
-      _currentState = updatedState;
-      notifyListeners();
+      // Only update UI if countdown value actually changed
+      if (shouldUpdate) {
+        final updatedState = TrafficLightState(
+          currentColor: _currentState.currentColor,
+          countdownSeconds: displaySeconds,
+          recognizedSigns: _currentState.recognizedSigns,
+          timestamp: _currentState.timestamp,
+        );
+        
+        _currentState = updatedState;
+        notifyListeners();
+      }
     });
   }
 

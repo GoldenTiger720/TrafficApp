@@ -3,6 +3,7 @@ import '../models/traffic_light_state.dart';
 import 'traffic_light_overlay_widget.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
+import 'dart:async';
 import '../services/overlay_service.dart';
 
 class DraggableOverlay extends StatefulWidget {
@@ -155,50 +156,46 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
             child: AnimatedOpacity(
               opacity: widget.transparency,
               duration: const Duration(milliseconds: 200),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Container(
-                  constraints: const BoxConstraints(
-                    maxWidth: 200, // Increased to accommodate timer
-                    maxHeight: 250,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: _isDragging ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      ),
-                    ] : [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      _buildOverlayContent(),
-                      if (_isDragging)
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Icon(
-                              Icons.drag_indicator,
-                              color: Colors.white,
-                              size: 16,
+              child: RepaintBoundary( // Optimize repaints
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 200,
+                      maxHeight: 250,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: _isDragging ? [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2), // Reduced opacity
+                          blurRadius: 6, // Reduced blur
+                          spreadRadius: 1, // Reduced spread
+                        ),
+                      ] : [], // Remove shadow when not dragging for better performance
+                    ),
+                    child: Stack(
+                      children: [
+                        _buildOverlayContent(),
+                        if (_isDragging)
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Icon(
+                                Icons.drag_indicator,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -329,6 +326,7 @@ class _OverlayManagerState extends State<OverlayManager> with WidgetsBindingObse
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _overlayUpdateTimer?.cancel();
     if (Platform.isAndroid && widget.overlayEnabled) {
       // Stop Android overlay service when disposing
       OverlayService.stopOverlayService();
@@ -356,28 +354,40 @@ class _OverlayManagerState extends State<OverlayManager> with WidgetsBindingObse
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (widget.overlayEnabled) {
-      switch (state) {
-        case AppLifecycleState.resumed:
-          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-            _ensureAlwaysOnTop();
-          } else if (Platform.isAndroid) {
-            // Update Android overlay service with current state
-            OverlayService.updateOverlayState(widget.trafficLightState);
-          }
-          break;
-        case AppLifecycleState.inactive:
-        case AppLifecycleState.paused:
-        case AppLifecycleState.detached:
-        case AppLifecycleState.hidden:
-          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-            // Keep always on top even when app is in background
-            _ensureAlwaysOnTop();
-          }
-          // On Android, the service continues running in background automatically
-          break;
-      }
+    if (!widget.overlayEnabled) return;
+    
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+          _ensureAlwaysOnTop();
+        } else if (Platform.isAndroid) {
+          // Throttle Android overlay updates - only update every 2 seconds max
+          _throttledUpdateOverlay();
+        }
+        break;
+      case AppLifecycleState.paused:
+        // Reduce background activity when app is paused
+        if (Platform.isAndroid) {
+          // Don't continuously update overlay when app is in background
+        }
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        // Minimal activity when app is inactive
+        break;
     }
+  }
+  
+  Timer? _overlayUpdateTimer;
+  
+  void _throttledUpdateOverlay() {
+    _overlayUpdateTimer?.cancel();
+    _overlayUpdateTimer = Timer(const Duration(seconds: 2), () {
+      if (Platform.isAndroid && OverlayService.isServiceRunning) {
+        OverlayService.updateOverlayState(widget.trafficLightState);
+      }
+    });
   }
 
   void _ensureAlwaysOnTop() async {

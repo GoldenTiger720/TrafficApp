@@ -67,10 +67,7 @@ dependencies:
   # JSON handling
   json_annotation: ^4.8.1
   
-  # Maps and location
-  google_maps_flutter: ^2.5.0
-  geolocator: ^10.1.0
-  location: ^5.0.3
+  # Maps and location removed for performance
   
   # Animations
   animations: ^2.0.8
