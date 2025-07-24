@@ -84,9 +84,9 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     
-    // Calculate actual widget dimensions after scaling
-    final widgetWidth = 400 * widget.size; // Doubled base width from 200 to 400
-    final widgetHeight = 500 * widget.size; // Doubled base height from 250 to 500
+    // Calculate actual widget dimensions after scaling (match the actual visual size)
+    final widgetWidth = 200 * widget.size; // Base width 200 scaled by size
+    final widgetHeight = 250 * widget.size; // Base height 250 scaled by size
     
     // Calculate top-left position for Positioned widget
     // Center the widget at the stored position
@@ -100,7 +100,10 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
     return Positioned(
       left: left,
       top: top,
-      child: GestureDetector(
+      child: SizedBox(
+        width: widgetWidth,
+        height: widgetHeight,
+        child: GestureDetector(
         onDoubleTap: () {
           if (!_hasMoved) {
             widget.onDoubleTap?.call();
@@ -111,7 +114,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
             _isDragging = true;
             _hasMoved = false;
             // Store the offset from the widget center to the touch point
-            _dragOffset = details.localPosition - Offset(widgetWidth / 2, 0);
+            _dragOffset = details.localPosition - Offset(widgetWidth / 2, widgetHeight / 2);
           });
         },
         onPanUpdate: (details) {
@@ -201,6 +204,7 @@ class _DraggableOverlayState extends State<DraggableOverlay> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

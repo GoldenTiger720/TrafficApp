@@ -65,7 +65,7 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> updateOverlaySize(double size) async {
     // Ensure size is within valid range
-    final clampedSize = size.clamp(0.5, 1.0);
+    final clampedSize = size.clamp(0.3, 1.0);
     _settings = _settings.copyWith(overlaySize: clampedSize);
     await _saveSettings();
     notifyListeners();

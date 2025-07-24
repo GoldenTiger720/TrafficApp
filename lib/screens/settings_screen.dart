@@ -92,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildSliderTile(
                     AppLocalizations.of(context)?.size ?? 'Size',
                     settings.overlaySize,
-                    0.5,
+                    0.3,
                     1.0,
                     (value) => settingsProvider.updateOverlaySize(value),
                     valueFormatter: (value) => '${(value * 100).round()}%',
