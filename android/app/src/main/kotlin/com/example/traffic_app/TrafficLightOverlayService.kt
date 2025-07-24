@@ -142,8 +142,8 @@ class TrafficLightOverlayService : Service() {
             gravity = Gravity.TOP or Gravity.START
             // Calculate initial position based on screen size and normalized coordinates
             val displayMetrics = resources.displayMetrics
-            x = (positionX * displayMetrics.widthPixels).toInt()
-            y = (positionY * displayMetrics.heightPixels).toInt()
+            x = (positionX).toInt()
+            y = (positionY).toInt()
         }
         
         overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_traffic_light, null)
@@ -209,8 +209,8 @@ class TrafficLightOverlayService : Service() {
         
         // Update position
         val displayMetrics = resources.displayMetrics
-        params.x = (positionX * displayMetrics.widthPixels).toInt()
-        params.y = (positionY * displayMetrics.heightPixels).toInt()
+        params.x = (positionX ).toInt()
+        params.y = (positionY).toInt()
         
         // Update transparency
         overlayView.alpha = transparency
