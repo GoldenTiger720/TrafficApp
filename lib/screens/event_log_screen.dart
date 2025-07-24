@@ -31,21 +31,6 @@ class _EventLogScreenState extends State<EventLogScreen> {
                     ? _buildEmptyState()
                     : _buildEventsList(events),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: _exportLog,
-                    tooltip: AppLocalizations.of(context)?.exportEventLog ?? 'Export Log',
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.clear_all),
-                    onPressed: _showClearDialog,
-                    tooltip: AppLocalizations.of(context)?.clearEventLog ?? 'Clear Log',
-                  ),
-                ],
-              ),
             ],
           );
         },
@@ -133,9 +118,9 @@ class _EventLogScreenState extends State<EventLogScreen> {
                 final count = counts[type] ?? 0;
                 return Chip(
                   label: Text('${_getEventTypeDisplayName(type)}: $count'),
-                  backgroundColor: _getEventTypeColor(type).withOpacity(0.2),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                   labelStyle: TextStyle(
-                    color: _getEventTypeColor(type),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 12,
                   ),
                 );
@@ -343,41 +328,4 @@ class _EventLogScreenState extends State<EventLogScreen> {
     }
   }
 
-  Future<void> _exportLog() async {
-    try {
-      await context.read<EventLogService>().shareEventLog();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.exportFailed(e.toString()) ?? 'Export failed: $e')),
-      );
-    }
-  }
-
-  Future<void> _showClearDialog() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)?.clearEventLog ?? 'Clear Event Log'),
-        content: Text(AppLocalizations.of(context)?.clearEventLogConfirm ?? 'This will permanently delete all logged events. Continue?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(AppLocalizations.of(context)?.clear ?? 'Clear'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      context.read<EventLogService>().clearEvents();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.eventLogCleared ?? 'Event log cleared')),
-      );
-    }
-  }
 }

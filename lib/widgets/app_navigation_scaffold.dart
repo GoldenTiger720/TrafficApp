@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
+import 'package:provider/provider.dart';
 import 'bottom_navigation_bar.dart';
 import '../screens/main_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/event_log_screen.dart';
 import '../screens/routes_screen.dart';
+import '../services/event_log_service.dart';
 import '../l10n/app_localizations.dart';
 
 class AppNavigationScaffold extends StatefulWidget {
@@ -41,6 +43,7 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
+        actions: _getAppBarActions(),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -114,6 +117,79 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
         return l10n?.about ?? 'About';
       default:
         return l10n?.trafficLightMonitor ?? 'Traffic Monitor';
+    }
+  }
+
+  List<Widget>? _getAppBarActions() {
+    if (_currentRoute != '/event-log') return null;
+    
+    final l10n = AppLocalizations.of(context);
+    return [
+      IconButton(
+        icon: const Icon(Icons.share),
+        onPressed: _exportEventLog,
+        tooltip: l10n?.exportEventLog ?? 'Export Event Log',
+      ),
+      PopupMenuButton<String>(
+        onSelected: _handleMenuAction,
+        itemBuilder: (BuildContext context) => [
+          PopupMenuItem<String>(
+            value: 'clear',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline, color: Colors.red),
+                const SizedBox(width: 8),
+                Text(l10n?.clearEventLog ?? 'Clear Event Log'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Future<void> _exportEventLog() async {
+    try {
+      await context.read<EventLogService>().shareEventLog();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)?.exportFailed(e.toString()) ?? 'Export failed: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleMenuAction(String action) async {
+    if (action == 'clear') {
+      _showClearDialog();
+    }
+  }
+
+  Future<void> _showClearDialog() async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n?.clearEventLog ?? 'Clear Event Log'),
+        content: Text(l10n?.clearEventLogConfirm ?? 'This will permanently delete all logged events. Continue?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(l10n?.clear ?? 'Clear'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      context.read<EventLogService>().clearEvents();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n?.eventLogCleared ?? 'Event log cleared')),
+      );
     }
   }
 }
