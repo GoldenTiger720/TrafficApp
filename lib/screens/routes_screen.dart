@@ -175,7 +175,7 @@ class _RoutesScreenState extends State<RoutesScreen>
           onPressed: _addNewRoute,
           icon: const Icon(Icons.add),
           label: Text(l10n?.addRoute ?? 'Add Route'),
-          backgroundColor: theme.colorScheme.primary,
+          // Colors will be handled by the theme
         ),
       ),
     ],
