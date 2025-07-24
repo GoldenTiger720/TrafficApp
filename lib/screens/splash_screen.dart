@@ -118,29 +118,48 @@ class _SplashScreenState extends State<SplashScreen>
                   margin: const EdgeInsets.symmetric(horizontal: 40),
                   child: Column(
                     children: [
-                      // App Icon
+                      // App Logo Image
                       Container(
-                        width: 120,
-                        height: 120,
+                        width: 150,
+                        height: 150,
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 2,
-                          ),
+                          borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              blurRadius: 20,
-                              spreadRadius: 5,
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 15,
+                              spreadRadius: 3,
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.traffic,
-                          size: 60,
-                          color: Colors.amber,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            'assets/images/traffic.png',
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback if image fails to load
+                              return Container(
+                                width: 150,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.traffic,
+                                  size: 80,
+                                  color: Colors.amber,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       
@@ -148,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen>
                       
                       // App Title
                       Text(
-                        'Traffic Light Monitor',
+                        'TURIST',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,

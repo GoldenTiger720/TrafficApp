@@ -121,7 +121,7 @@ class TrafficLightApp extends StatelessWidget {
           child: Consumer<SettingsProvider>(
             builder: (context, settingsProvider, child) {
               return MaterialApp(
-                title: 'Traffic Light Monitor',
+                title: 'TURIST',
                 debugShowCheckedModeBanner: false,
                 theme: _buildTheme(settingsProvider.settings.theme, false),
                 darkTheme: _buildTheme(settingsProvider.settings.theme, true),

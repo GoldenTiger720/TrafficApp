@@ -21,7 +21,7 @@ class TrafficLightDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.trafficLightMonitor ?? 'Traffic Light Monitor',
+          AppLocalizations.of(context)?.trafficLightMonitor ?? 'TURIST',
           style: const TextStyle(color: Colors.white),
         ),
       ),
