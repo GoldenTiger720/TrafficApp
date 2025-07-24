@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/event_log_service.dart';
 import '../models/event_log.dart';
+import '../l10n/app_localizations.dart';
 
 class EventLogScreen extends StatefulWidget {
   const EventLogScreen({super.key});
@@ -17,28 +18,11 @@ class _EventLogScreenState extends State<EventLogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Event Log'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: _exportLog,
-            tooltip: 'Export Log',
-          ),
-          IconButton(
-            icon: const Icon(Icons.clear_all),
-            onPressed: _showClearDialog,
-            tooltip: 'Clear Log',
-          ),
-        ],
-      ),
-      body: Consumer<EventLogService>(
-        builder: (context, eventLogService, child) {
-          final events = _getFilteredEvents(eventLogService.events);
-          
-          return Column(
+    return Consumer<EventLogService>(
+      builder: (context, eventLogService, child) {
+        final events = _getFilteredEvents(eventLogService.events);
+        
+        return Column(
             children: [
               _buildFiltersSection(),
               _buildStatistics(eventLogService),
@@ -47,11 +31,25 @@ class _EventLogScreenState extends State<EventLogScreen> {
                     ? _buildEmptyState()
                     : _buildEventsList(events),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.share),
+                    onPressed: _exportLog,
+                    tooltip: AppLocalizations.of(context)?.exportEventLog ?? 'Export Log',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.clear_all),
+                    onPressed: _showClearDialog,
+                    tooltip: AppLocalizations.of(context)?.clearEventLog ?? 'Clear Log',
+                  ),
+                ],
+              ),
             ],
           );
         },
-      ),
-    );
+      );
   }
 
   Widget _buildFiltersSection() {
@@ -63,10 +61,10 @@ class _EventLogScreenState extends State<EventLogScreen> {
           children: [
             TextField(
               controller: _searchController,
-              decoration: const InputDecoration(
-                hintText: 'Search events...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)?.searchEvents ?? 'Search events...',
+                prefixIcon: const Icon(Icons.search),
+                border: const OutlineInputBorder(),
               ),
               onChanged: (value) {
                 setState(() {
@@ -77,16 +75,16 @@ class _EventLogScreenState extends State<EventLogScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Text('Filter by type: '),
+                Text(AppLocalizations.of(context)?.filterByType ?? 'Filter by type: '),
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButton<EventType?>(
                     value: _selectedFilter,
                     isExpanded: true,
                     items: [
-                      const DropdownMenuItem<EventType?>(
+                      DropdownMenuItem<EventType?>(
                         value: null,
-                        child: Text('All Events'),
+                        child: Text(AppLocalizations.of(context)?.allEvents ?? 'All Events'),
                       ),
                       ...EventType.values.map((type) => DropdownMenuItem<EventType?>(
                         value: type,
@@ -120,13 +118,13 @@ class _EventLogScreenState extends State<EventLogScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Statistics',
+              AppLocalizations.of(context)?.statistics ?? 'Statistics',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            Text('Total Events: $totalEvents'),
+            Text('${AppLocalizations.of(context)?.totalEvents ?? 'Total Events'}: $totalEvents'),
             const SizedBox(height: 4),
             Wrap(
               spacing: 8,
@@ -161,14 +159,14 @@ class _EventLogScreenState extends State<EventLogScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No events found',
+            AppLocalizations.of(context)?.noEventsFound ?? 'No events found',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.grey[600],
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Events will appear here as they occur',
+            AppLocalizations.of(context)?.eventsWillAppearHere ?? 'Events will appear here as they occur',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[500],
             ),
@@ -219,21 +217,21 @@ class _EventLogScreenState extends State<EventLogScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow('Event ID', event.id),
-                _buildDetailRow('Type', _getEventTypeDisplayName(event.type)),
-                _buildDetailRow('Timestamp', event.timestamp.toIso8601String()),
+                _buildDetailRow(AppLocalizations.of(context)?.eventId ?? 'Event ID', event.id),
+                _buildDetailRow(AppLocalizations.of(context)?.type ?? 'Type', _getEventTypeDisplayName(event.type)),
+                _buildDetailRow(AppLocalizations.of(context)?.timestamp ?? 'Timestamp', event.timestamp.toIso8601String()),
                 if (event.previousColor != null && event.newColor != null) ...[
-                  _buildDetailRow('Color Change', 
+                  _buildDetailRow(AppLocalizations.of(context)?.colorChange ?? 'Color Change', 
                     '${event.previousColor!.name} → ${event.newColor!.name}'),
                 ],
                 if (event.recognizedSigns?.isNotEmpty == true) ...[
-                  _buildDetailRow('Signs', 
+                  _buildDetailRow(AppLocalizations.of(context)?.signs ?? 'Signs', 
                     event.recognizedSigns!.map((s) => s.name).join(', ')),
                 ],
                 if (event.additionalData?.isNotEmpty == true) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Additional Data:',
+                    '${AppLocalizations.of(context)?.additionalData ?? 'Additional Data'}:',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 4),
@@ -300,17 +298,18 @@ class _EventLogScreenState extends State<EventLogScreen> {
   }
 
   String _getEventTypeDisplayName(EventType type) {
+    final l10n = AppLocalizations.of(context);
     switch (type) {
       case EventType.signalChange:
-        return 'Signal Change';
+        return l10n?.signalChange ?? 'Signal Change';
       case EventType.signRecognition:
-        return 'Sign Recognition';
+        return l10n?.signRecognition ?? 'Sign Recognition';
       case EventType.connectionStatusChange:
-        return 'Connection';
+        return l10n?.connectionStatusChange ?? 'Connection';
       case EventType.error:
-        return 'Error';
+        return l10n?.error ?? 'Error';
       case EventType.userAction:
-        return 'User Action';
+        return l10n?.userAction ?? 'User Action';
     }
   }
 
@@ -349,7 +348,7 @@ class _EventLogScreenState extends State<EventLogScreen> {
       await context.read<EventLogService>().shareEventLog();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Export failed: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.exportFailed(e.toString()) ?? 'Export failed: $e')),
       );
     }
   }
@@ -358,17 +357,17 @@ class _EventLogScreenState extends State<EventLogScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear Event Log'),
-        content: const Text('This will permanently delete all logged events. Continue?'),
+        title: Text(AppLocalizations.of(context)?.clearEventLog ?? 'Clear Event Log'),
+        content: Text(AppLocalizations.of(context)?.clearEventLogConfirm ?? 'This will permanently delete all logged events. Continue?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Clear'),
+            child: Text(AppLocalizations.of(context)?.clear ?? 'Clear'),
           ),
         ],
       ),
@@ -377,7 +376,7 @@ class _EventLogScreenState extends State<EventLogScreen> {
     if (confirmed == true) {
       context.read<EventLogService>().clearEvents();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event log cleared')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.eventLogCleared ?? 'Event log cleared')),
       );
     }
   }

@@ -144,6 +144,114 @@ class AppLocalizations {
     'pl': 'Wyczyść dziennik',
   });
 
+  String get searchEvents => _localizedString('search_events', {
+    'en': 'Search events...',
+    'ru': 'Поиск событий...',
+    'pl': 'Szukaj zdarzeń...',
+  });
+
+  String get filterByType => _localizedString('filter_by_type', {
+    'en': 'Filter by type: ',
+    'ru': 'Фильтр по типу: ',
+    'pl': 'Filtruj według typu: ',
+  });
+
+  String get allEvents => _localizedString('all_events', {
+    'en': 'All Events',
+    'ru': 'Все события',
+    'pl': 'Wszystkie zdarzenia',
+  });
+
+  String get statistics => _localizedString('statistics', {
+    'en': 'Statistics',
+    'ru': 'Статистика',
+    'pl': 'Statystyki',
+  });
+
+  String get totalEvents => _localizedString('total_events', {
+    'en': 'Total Events',
+    'ru': 'Всего событий',
+    'pl': 'Łączna liczba zdarzeń',
+  });
+
+  String get noEventsFound => _localizedString('no_events_found', {
+    'en': 'No events found',
+    'ru': 'События не найдены',
+    'pl': 'Nie znaleziono zdarzeń',
+  });
+
+  String get eventsWillAppearHere => _localizedString('events_will_appear_here', {
+    'en': 'Events will appear here as they occur',
+    'ru': 'События будут появляться здесь по мере их возникновения',
+    'pl': 'Zdarzenia będą pojawiać się tutaj w miarę ich wystąpienia',
+  });
+
+  String get eventId => _localizedString('event_id', {
+    'en': 'Event ID',
+    'ru': 'ID события',
+    'pl': 'ID zdarzenia',
+  });
+
+  String get type => _localizedString('type', {
+    'en': 'Type',
+    'ru': 'Тип',
+    'pl': 'Typ',
+  });
+
+  String get timestamp => _localizedString('timestamp', {
+    'en': 'Timestamp',
+    'ru': 'Временная метка',
+    'pl': 'Znacznik czasu',
+  });
+
+  String get colorChange => _localizedString('color_change', {
+    'en': 'Color Change',
+    'ru': 'Изменение цвета',
+    'pl': 'Zmiana koloru',
+  });
+
+  String get signs => _localizedString('signs', {
+    'en': 'Signs',
+    'ru': 'Знаки',
+    'pl': 'Znaki',
+  });
+
+  String get additionalData => _localizedString('additional_data', {
+    'en': 'Additional Data',
+    'ru': 'Дополнительные данные',
+    'pl': 'Dodatkowe dane',
+  });
+
+  String get signalChange => _localizedString('signal_change', {
+    'en': 'Signal Change',
+    'ru': 'Изменение сигнала',
+    'pl': 'Zmiana sygnału',
+  });
+
+  String get signRecognition => _localizedString('sign_recognition', {
+    'en': 'Sign Recognition',
+    'ru': 'Распознавание знаков',
+    'pl': 'Rozpoznawanie znaków',
+  });
+
+  String get connectionStatusChange => _localizedString('connection_status_change', {
+    'en': 'Connection',
+    'ru': 'Подключение',
+    'pl': 'Połączenie',
+  });
+
+  String get error => _localizedString('error', {
+    'en': 'Error',
+    'ru': 'Ошибка',
+    'pl': 'Błąd',
+  });
+
+  String get userAction => _localizedString('user_action', {
+    'en': 'User Action',
+    'ru': 'Действие пользователя',
+    'pl': 'Akcja użytkownika',
+  });
+
   // Notifications
   String get notifications => _localizedString('notifications', {
     'en': 'Notifications',

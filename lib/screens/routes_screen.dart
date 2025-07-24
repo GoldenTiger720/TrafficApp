@@ -99,10 +99,11 @@ class _RoutesScreenState extends State<RoutesScreen>
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     
-    return Scaffold(
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: CustomScrollView(
+    return Stack(
+      children: [
+        FadeTransition(
+          opacity: _fadeAnimation,
+          child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Container(
@@ -167,13 +168,18 @@ class _RoutesScreenState extends State<RoutesScreen>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _addNewRoute,
-        icon: const Icon(Icons.add),
-        label: Text(l10n?.addRoute ?? 'Add Route'),
-        backgroundColor: theme.colorScheme.primary,
+      Positioned(
+        right: 16,
+        bottom: 16,
+        child: FloatingActionButton.extended(
+          onPressed: _addNewRoute,
+          icon: const Icon(Icons.add),
+          label: Text(l10n?.addRoute ?? 'Add Route'),
+          backgroundColor: theme.colorScheme.primary,
+        ),
       ),
-    );
+    ],
+  );
   }
 
   Widget _buildRouteCard(TrafficRoute route, ThemeData theme) {

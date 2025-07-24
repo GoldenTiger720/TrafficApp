@@ -5,6 +5,7 @@ import '../screens/main_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/event_log_screen.dart';
 import '../screens/routes_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class AppNavigationScaffold extends StatefulWidget {
   final Widget? child;
@@ -99,19 +100,20 @@ class _AppNavigationScaffoldState extends State<AppNavigationScaffold> {
   }
 
   String _getAppBarTitle() {
+    final l10n = AppLocalizations.of(context);
     switch (_currentRoute) {
       case '/home':
-        return 'Traffic Monitor';
+        return l10n?.trafficLightMonitor ?? 'Traffic Monitor';
       case '/routes':
-        return 'Routes';
+        return l10n?.routes ?? 'Routes';
       case '/event-log':
-        return 'Event Log';
+        return l10n?.eventLog ?? 'Event Log';
       case '/settings':
-        return 'Settings';
+        return l10n?.settings ?? 'Settings';
       case '/about':
-        return 'About';
+        return l10n?.about ?? 'About';
       default:
-        return 'Traffic Monitor';
+        return l10n?.trafficLightMonitor ?? 'Traffic Monitor';
     }
   }
 }

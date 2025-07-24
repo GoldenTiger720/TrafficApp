@@ -25,9 +25,15 @@ class _MainScreenState extends State<MainScreen> {
       builder: (context, trafficProvider, settingsProvider, child) {
         final settings = settingsProvider.settings;
         
-        return Scaffold(
-          body: _buildBody(context, trafficProvider, settings),
-          floatingActionButton: _buildFloatingActionButtons(context, trafficProvider, settings),
+        return Stack(
+          children: [
+            _buildBody(context, trafficProvider, settings),
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: _buildFloatingActionButtons(context, trafficProvider, settings),
+            ),
+          ],
         );
       },
     );

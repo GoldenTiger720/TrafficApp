@@ -52,16 +52,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)?.settings ?? 'Settings'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Consumer<SettingsProvider>(
-        builder: (context, settingsProvider, child) {
-          final settings = settingsProvider.settings;
-          
-          return ListView(
+    return Consumer<SettingsProvider>(
+      builder: (context, settingsProvider, child) {
+        final settings = settingsProvider.settings;
+        
+        return ListView(
             padding: const EdgeInsets.all(16),
             children: [
               _buildSection(
@@ -245,8 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           );
         },
-      ),
-    );
+      );
   }
 
   Widget _buildSection(String title, List<Widget> children) {
