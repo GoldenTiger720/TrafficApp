@@ -33,11 +33,18 @@ class TrafficLightOverlayService : Service() {
     private var currentColor = "red"
     private var countdownSeconds = 0
     
+    // Settings
+    private var transparency = 0.8f
+    private var size = 1.0f
+    private var positionX = 0.5f
+    private var positionY = 0.5f
+    
     companion object {
         const val CHANNEL_ID = "TrafficLightOverlayChannel"
         const val NOTIFICATION_ID = 1
         
         const val ACTION_UPDATE_STATE = "com.example.traffic_app.UPDATE_STATE"
+        const val ACTION_UPDATE_SETTINGS = "com.example.traffic_app.UPDATE_SETTINGS"
         const val EXTRA_COLOR = "color"
         const val EXTRA_COUNTDOWN = "countdown"
     }
@@ -55,7 +62,20 @@ class TrafficLightOverlayService : Service() {
                 countdownSeconds = intent.getIntExtra(EXTRA_COUNTDOWN, 0)
                 updateTrafficLight()
             }
+            ACTION_UPDATE_SETTINGS -> {
+                transparency = intent.getDoubleExtra("transparency", 0.8).toFloat()
+                size = intent.getDoubleExtra("size", 1.0).toFloat()
+                positionX = intent.getDoubleExtra("positionX", 0.5).toFloat()
+                positionY = intent.getDoubleExtra("positionY", 0.5).toFloat()
+                updateOverlaySettings()
+            }
             else -> {
+                // Get initial settings from intent
+                transparency = intent?.getDoubleExtra("transparency", 0.8)?.toFloat() ?: 0.8f
+                size = intent?.getDoubleExtra("size", 1.0)?.toFloat() ?: 1.0f
+                positionX = intent?.getDoubleExtra("positionX", 0.5)?.toFloat() ?: 0.5f
+                positionY = intent?.getDoubleExtra("positionY", 0.5)?.toFloat() ?: 0.5f
+                
                 startForeground(NOTIFICATION_ID, createNotification())
                 createOverlayView()
             }
@@ -120,8 +140,10 @@ class TrafficLightOverlayService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 100
-            y = 100
+            // Calculate initial position based on screen size and normalized coordinates
+            val displayMetrics = resources.displayMetrics
+            x = (positionX * displayMetrics.widthPixels).toInt()
+            y = (positionY * displayMetrics.heightPixels).toInt()
         }
         
         overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_traffic_light, null)
@@ -130,6 +152,11 @@ class TrafficLightOverlayService : Service() {
         yellowLight = overlayView.findViewById(R.id.yellow_light)
         greenLight = overlayView.findViewById(R.id.green_light)
         timerText = overlayView.findViewById(R.id.timer_text)
+        
+        // Apply initial settings
+        overlayView.alpha = transparency
+        overlayView.scaleX = size
+        overlayView.scaleY = size
         
         updateTrafficLight()
         
@@ -175,5 +202,24 @@ class TrafficLightOverlayService : Service() {
             "green" -> Color.GREEN
             else -> Color.WHITE
         })
+    }
+    
+    private fun updateOverlaySettings() {
+        if (!::overlayView.isInitialized || !::params.isInitialized) return
+        
+        // Update position
+        val displayMetrics = resources.displayMetrics
+        params.x = (positionX * displayMetrics.widthPixels).toInt()
+        params.y = (positionY * displayMetrics.heightPixels).toInt()
+        
+        // Update transparency
+        overlayView.alpha = transparency
+        
+        // Update size through scaling
+        overlayView.scaleX = size
+        overlayView.scaleY = size
+        
+        // Apply changes
+        windowManager.updateViewLayout(overlayView, params)
     }
 }

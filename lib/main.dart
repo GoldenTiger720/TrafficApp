@@ -8,6 +8,7 @@ import 'providers/settings_provider.dart';
 import 'services/connection_service.dart';
 import 'services/notification_service.dart';
 import 'services/event_log_service.dart';
+import 'services/app_lifecycle_observer.dart';
 import 'widgets/app_navigation_scaffold.dart';
 import 'models/app_settings.dart';
 import 'l10n/app_localizations.dart';
@@ -45,6 +46,9 @@ void main() async {
       debugPrint('Notification service failed to initialize: $e');
       notificationService = NotificationService(); // Use without init
     }
+    
+    // Initialize app lifecycle observer
+    AppLifecycleObserver().initialize();
     
     runApp(TrafficLightApp(notificationService: notificationService));
   } catch (e) {

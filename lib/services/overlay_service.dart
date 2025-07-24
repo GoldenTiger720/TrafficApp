@@ -32,7 +32,7 @@ class OverlayService {
     }
   }
   
-  static Future<bool> startOverlayService() async {
+  static Future<bool> startOverlayService({double? transparency, double? size, double? positionX, double? positionY}) async {
     if (!Platform.isAndroid) return false;
     
     try {
@@ -42,7 +42,12 @@ class OverlayService {
         return false;
       }
       
-      final bool success = await platform.invokeMethod('startOverlayService');
+      final bool success = await platform.invokeMethod('startOverlayService', {
+        'transparency': transparency ?? 0.8,
+        'size': size ?? 1.0,
+        'positionX': positionX ?? 0.5,
+        'positionY': positionY ?? 0.5,
+      });
       if (success) {
         _isServiceRunning = true;
       }
@@ -92,6 +97,23 @@ class OverlayService {
       return success;
     } catch (e) {
       print('Error updating overlay state: $e');
+      return false;
+    }
+  }
+  
+  static Future<bool> updateOverlaySettings({required double transparency, required double size, required double positionX, required double positionY}) async {
+    if (!Platform.isAndroid || !_isServiceRunning) return false;
+    
+    try {
+      final bool success = await platform.invokeMethod('updateOverlaySettings', {
+        'transparency': transparency,
+        'size': size,
+        'positionX': positionX,
+        'positionY': positionY,
+      });
+      return success;
+    } catch (e) {
+      print('Error updating overlay settings: $e');
       return false;
     }
   }

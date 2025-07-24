@@ -346,8 +346,21 @@ class _OverlayManagerState extends State<OverlayManager> with WidgetsBindingObse
       }
     }
     
-    // Update overlay state on Android
+    // Update overlay settings and state on Android
     if (Platform.isAndroid && widget.overlayEnabled && OverlayService.isServiceRunning) {
+      // Update settings if they changed
+      if (oldWidget.transparency != widget.transparency || 
+          oldWidget.size != widget.size || 
+          oldWidget.positionX != widget.positionX || 
+          oldWidget.positionY != widget.positionY) {
+        OverlayService.updateOverlaySettings(
+          transparency: widget.transparency,
+          size: widget.size,
+          positionX: widget.positionX,
+          positionY: widget.positionY,
+        );
+      }
+      // Update state
       OverlayService.updateOverlayState(widget.trafficLightState);
     }
   }
@@ -395,29 +408,20 @@ class _OverlayManagerState extends State<OverlayManager> with WidgetsBindingObse
       await windowManager.setAlwaysOnTop(true);
       await windowManager.setSkipTaskbar(false);
     } else if (Platform.isAndroid && widget.overlayEnabled) {
-      // Start Android overlay service
-      await OverlayService.startOverlayService();
+      // Start Android overlay service with settings
+      await OverlayService.startOverlayService(
+        transparency: widget.transparency,
+        size: widget.size,
+        positionX: widget.positionX,
+        positionY: widget.positionY,
+      );
       await OverlayService.updateOverlayState(widget.trafficLightState);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        widget.child,
-        if (widget.overlayEnabled)
-          DraggableOverlay(
-            trafficLightState: widget.trafficLightState,
-            transparency: widget.transparency,
-            size: widget.size,
-            initialX: widget.positionX,
-            initialY: widget.positionY,
-            isMinimalistic: widget.isMinimalistic,
-            onPositionChanged: widget.onPositionChanged,
-            onDoubleTap: widget.onOverlayDoubleTap,
-          ),
-      ],
-    );
+    // No longer showing Flutter overlay - using native Android overlay service instead
+    return widget.child;
   }
 }

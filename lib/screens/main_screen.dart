@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/traffic_light_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/traffic_light_widget.dart';
-import '../widgets/draggable_overlay.dart';
 import '../models/app_settings.dart';
 import '../models/traffic_light_state.dart';
 import '../l10n/app_localizations.dart';
@@ -25,24 +24,10 @@ class _MainScreenState extends State<MainScreen> {
     return Consumer2<TrafficLightProvider, SettingsProvider>(
       builder: (context, trafficProvider, settingsProvider, child) {
         final settings = settingsProvider.settings;
-        final trafficState = trafficProvider.currentState;
         
-        return OverlayManager(
-            overlayEnabled: settings.overlayEnabled,
-            trafficLightState: trafficState,
-            transparency: settings.overlayTransparency,
-            size: settings.overlaySize,
-            positionX: settings.overlayPositionX,
-            positionY: settings.overlayPositionY,
-            isMinimalistic: settings.displayMode == DisplayMode.minimalistic,
-            onPositionChanged: (x, y) {
-              settingsProvider.updateOverlayPosition(x, y);
-            },
-            onOverlayDoubleTap: () => _openDetailView(context),
-            child: Scaffold(
-              body: _buildBody(context, trafficProvider, settings),
-              floatingActionButton: _buildFloatingActionButtons(context, trafficProvider, settings),
-            ),
+        return Scaffold(
+          body: _buildBody(context, trafficProvider, settings),
+          floatingActionButton: _buildFloatingActionButtons(context, trafficProvider, settings),
         );
       },
     );
@@ -296,26 +281,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildFloatingActionButtons(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (settings.overlayEnabled)
-          FloatingActionButton(
-            heroTag: "toggle_overlay",
-            onPressed: () {
-              context.read<SettingsProvider>().updateOverlayEnabled(!settings.overlayEnabled);
-            },
-            tooltip: AppLocalizations.of(context)?.toggleOverlay ?? 'Toggle Overlay',
-            child: const Icon(Icons.visibility_off),
-          ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          heroTag: "bug_report",
-          onPressed: _reportBug,
-          tooltip: AppLocalizations.of(context)?.reportBug ?? 'Report Bug',
-          child: const Icon(Icons.bug_report),
-        ),
-      ],
+    return FloatingActionButton(
+      heroTag: "bug_report",
+      onPressed: _reportBug,
+      tooltip: AppLocalizations.of(context)?.reportBug ?? 'Report Bug',
+      child: const Icon(Icons.bug_report),
     );
   }
 

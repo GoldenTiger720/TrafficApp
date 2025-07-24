@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_settings.dart';
+import '../services/global_overlay_manager.dart';
 
 class SettingsProvider extends ChangeNotifier {
   AppSettings _settings = const AppSettings();
@@ -12,6 +13,8 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     await _loadSettings();
+    // Initialize global overlay manager with current settings
+    await GlobalOverlayManager().initialize(_settings);
   }
 
   Future<void> _loadSettings() async {
@@ -35,6 +38,8 @@ class SettingsProvider extends ChangeNotifier {
     try {
       final settingsJson = jsonEncode(_settings.toJson());
       await _prefs.setString('app_settings', settingsJson);
+      // Update global overlay manager with new settings
+      await GlobalOverlayManager().updateSettings(_settings);
     } catch (e) {
       debugPrint('Error saving settings: $e');
     }
