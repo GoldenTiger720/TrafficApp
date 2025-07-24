@@ -25,6 +25,10 @@ class TrafficLightOverlayService : Service() {
     private var initialTouchX = 0f
     private var initialTouchY = 0f
     
+    // Double tap detection
+    private var lastTapTime = 0L
+    private val DOUBLE_TAP_TIMEOUT = 300L
+    
     private lateinit var redLight: View
     private lateinit var yellowLight: View
     private lateinit var greenLight: View
@@ -167,6 +171,15 @@ class TrafficLightOverlayService : Service() {
                     initialY = params.y
                     initialTouchX = event.rawX
                     initialTouchY = event.rawY
+                    
+                    // Check for double tap
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) {
+                        // Double tap detected, bring app to foreground
+                        bringAppToForeground()
+                    }
+                    lastTapTime = currentTime
+                    
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -221,5 +234,13 @@ class TrafficLightOverlayService : Service() {
         
         // Apply changes
         windowManager.updateViewLayout(overlayView, params)
+    }
+    
+    private fun bringAppToForeground() {
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        launchIntent?.apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+            startActivity(this)
+        }
     }
 }
