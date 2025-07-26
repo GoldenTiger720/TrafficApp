@@ -104,11 +104,6 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       onDoubleTap: widget.onDoubleTap,
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[600]!, width: 2),
-        ),
         child: widget.isMinimalistic 
             ? _buildMinimalisticView()
             : _buildAdvancedView(context),
@@ -152,18 +147,6 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Widget _buildCentralCriticalArea(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8), // Further reduced padding
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12), // Smaller radius
-        border: Border.all(color: Colors.grey[700]!, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 6, // Reduced blur
-            spreadRadius: 2, // Reduced spread
-          ),
-        ],
-      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
@@ -1534,11 +1517,6 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       width: double.infinity,
       height: double.infinity, // Use full available height
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
