@@ -550,40 +550,40 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 // Lane boundary lines
                 Container(
                   width: 40,
-                  height: 3,
+                  height: 2,
                   decoration: BoxDecoration(
                     color: Colors.yellow[600],
-                    borderRadius: BorderRadius.circular(1.5),
+                    borderRadius: BorderRadius.circular(1),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 
                 // Direction arrows from recognized signs
                 if (_getLaneDirections().isNotEmpty) ...[
                   ..._getLaneDirections().take(2).map((direction) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Icon(
                       direction,
                       color: Colors.yellow[600],
-                      size: 20,
+                      size: 16,
                     ),
                   )),
                 ] else ...[
                   Icon(
                     Icons.straight,
                     color: Colors.yellow[600],
-                    size: 20,
+                    size: 16,
                   ),
                 ],
                 
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 // Bottom lane boundary
                 Container(
                   width: 40,
-                  height: 3,
+                  height: 2,
                   decoration: BoxDecoration(
                     color: Colors.yellow[600],
-                    borderRadius: BorderRadius.circular(1.5),
+                    borderRadius: BorderRadius.circular(1),
                   ),
                 ),
               ],
@@ -668,9 +668,6 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
           height: 107, // 2/3 of previous height (160 * 2/3 = 107)
           child: _buildCompactRoadSigns(context),
         ),
-        const SizedBox(height: 4),
-        // Compact road surface representation
-        _buildCompactRoadSurface(),
       ],
     );
   }
