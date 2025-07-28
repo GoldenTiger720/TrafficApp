@@ -495,17 +495,19 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // Direction arrows based on recognized signs
-              ..._getLaneDirections().take(2).map((direction) => Icon(
-                direction,
-                color: Colors.yellow[600],
-                size: 16,
+              // Direction images based on recognized signs
+              ..._getLaneDirections().take(1).map((imagePath) => Image.asset(
+                imagePath,
+                width: 30,
+                height: 30,
+                fit: BoxFit.contain,
               )),
               if (_getLaneDirections().isEmpty)
-                Icon(
-                  Icons.straight,
-                  color: Colors.yellow[600],
-                  size: 16,
+                Image.asset(
+                  'assets/images/straight.png',
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.contain,
                 ),
             ],
           ),
@@ -525,13 +527,13 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
 
   Widget _buildEnhancedLaneMarkings(bool isLeft) {
     return Container(
-      height: 93, // Reduced to 2/3 (140 * 2/3 = 93)
+      height: 110, // Increased to accommodate larger images
       child: Column(
         children: [
           // Lane direction indicator
           Container(
-            width: 60,
-            height: 67, // Reduced to 2/3 (100 * 2/3 = 67)
+            width: 80,
+            height: 80, // Increased to accommodate larger images
             decoration: BoxDecoration(
               color: Colors.grey[850],
               borderRadius: BorderRadius.circular(12),
@@ -558,21 +560,23 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 ),
                 const SizedBox(height: 4),
                 
-                // Direction arrows from recognized signs
+                // Direction images from recognized signs
                 if (_getLaneDirections().isNotEmpty) ...[
-                  ..._getLaneDirections().take(2).map((direction) => Padding(
+                  ..._getLaneDirections().take(1).map((imagePath) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Icon(
-                      direction,
-                      color: Colors.yellow[600],
-                      size: 16,
+                    child: Image.asset(
+                      imagePath,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.contain,
                     ),
                   )),
                 ] else ...[
-                  Icon(
-                    Icons.straight,
-                    color: Colors.yellow[600],
-                    size: 16,
+                  Image.asset(
+                    'assets/images/straight.png',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.contain,
                   ),
                 ],
                 
@@ -637,12 +641,12 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
               // Center directions
               Row(
                 children: [
-                  ..._getLaneDirections().take(3).map((direction) => Padding(
+                  ..._getLaneDirections().take(2).map((imagePath) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Icon(direction, color: Colors.yellow[600], size: 16),
+                    child: Image.asset(imagePath, width: 24, height: 24, fit: BoxFit.contain),
                   )),
                   if (_getLaneDirections().isEmpty)
-                    Icon(Icons.straight, color: Colors.yellow[600], size: 16),
+                    Image.asset('assets/images/straight.png', width: 24, height: 24, fit: BoxFit.contain),
                 ],
               ),
               // Right lane
@@ -773,11 +777,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
               color: _getSignColor(sign),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              _getSignIcon(sign),
-              color: Colors.white,
-              size: 24,
-            ),
+            child: _getSignWidget(sign, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -818,11 +818,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _getSignIcon(sign),
-            color: _getSignColor(sign),
-            size: 20,
-          ),
+          _getSignWidget(sign, color: _getSignColor(sign), size: 20),
           const SizedBox(width: 8),
           Text(
             _getLocalizedSignDisplayName(sign, context),
@@ -916,16 +912,18 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 Icon(Icons.keyboard_arrow_left, color: Colors.yellow[600], size: 12),
                 const SizedBox(width: 4),
                 if (_getLaneDirections().isNotEmpty)
-                  Icon(
+                  Image.asset(
                     _getLaneDirections().first,
-                    color: Colors.yellow[600],
-                    size: 12,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
                   )
                 else
-                  Icon(
-                    Icons.straight,
-                    color: Colors.yellow[600],
-                    size: 12,
+                  Image.asset(
+                    'assets/images/straight.png',
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
                   ),
                 const SizedBox(width: 4),
                 Icon(Icons.keyboard_arrow_right, color: Colors.yellow[600], size: 12),
@@ -957,19 +955,21 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
                 ),
                 const SizedBox(width: 6),
                 // Direction indicators (limited to prevent overflow)
-                ..._getLaneDirections().take(2).map((direction) => Padding(
+                ..._getLaneDirections().take(2).map((imagePath) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 1),
-                  child: Icon(
-                    direction,
-                    color: Colors.yellow[600],
-                    size: 12,
+                  child: Image.asset(
+                    imagePath,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
                   ),
                 )),
                 if (_getLaneDirections().isEmpty)
-                  Icon(
-                    Icons.straight,
-                    color: Colors.yellow[600],
-                    size: 12,
+                  Image.asset(
+                    'assets/images/straight.png',
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.contain,
                   ),
                 const SizedBox(width: 6),
                 // Right indicator
@@ -1067,18 +1067,18 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     );
   }
 
-  List<IconData> _getLaneDirections() {
-    List<IconData> directions = [];
+  List<String> _getLaneDirections() {
+    List<String> directions = [];
     for (var sign in widget.state.recognizedSigns) {
       switch (sign) {
         case RoadSign.turnLeft:
-          directions.add(Icons.turn_left);
+          directions.add('assets/images/left_turn.png');
           break;
         case RoadSign.turnRight:
-          directions.add(Icons.turn_right);
+          directions.add('assets/images/right_turn.png');
           break;
         case RoadSign.goStraight:
-          directions.add(Icons.straight);
+          directions.add('assets/images/straight.png');
           break;
         default:
           break;
@@ -1353,11 +1353,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _getSignIcon(sign),
-            color: _getSignColor(sign),
-            size: 20,
-          ),
+          _getSignWidget(sign, color: _getSignColor(sign), size: 20),
           const SizedBox(width: 8),
           Text(
             _getLocalizedSignDisplayName(sign, context),
@@ -1413,6 +1409,35 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
         return Icons.turn_right;
       case RoadSign.goStraight:
         return Icons.straight;
+    }
+  }
+
+  Widget _getSignWidget(RoadSign sign, {Color? color, double? size}) {
+    switch (sign) {
+      case RoadSign.turnLeft:
+        return Image.asset(
+          'assets/images/left_turn.png',
+          width: size ?? 24,
+          height: size ?? 24,
+        );
+      case RoadSign.turnRight:
+        return Image.asset(
+          'assets/images/right_turn.png',
+          width: size ?? 24,
+          height: size ?? 24,
+        );
+      case RoadSign.goStraight:
+        return Image.asset(
+          'assets/images/straight.png',
+          width: size ?? 24,
+          height: size ?? 24,
+        );
+      default:
+        return Icon(
+          _getSignIcon(sign),
+          color: color ?? Colors.white,
+          size: size ?? 24,
+        );
     }
   }
 
@@ -1612,11 +1637,7 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _getSignIcon(sign),
-            color: _getSignColor(sign),
-            size: 12, // Smaller icon
-          ),
+          _getSignWidget(sign, color: _getSignColor(sign), size: 12),
           const SizedBox(width: 3), // Smaller spacing
           Text(
             _getCompactSignName(sign), // Use compact names

@@ -213,7 +213,7 @@ class TrafficLightDetailScreen extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(_getSignIcon(sign), color: Colors.blue, size: 16),
+                      _getSignWidget(sign, color: Colors.blue, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         _getSignDisplayName(sign),
@@ -434,6 +434,35 @@ class TrafficLightDetailScreen extends StatelessWidget {
         return Icons.turn_right;
       case RoadSign.goStraight:
         return Icons.straight;
+    }
+  }
+
+  Widget _getSignWidget(RoadSign sign, {Color? color, double? size}) {
+    switch (sign) {
+      case RoadSign.turnLeft:
+        return Image.asset(
+          'assets/images/left_turn.png',
+          width: size ?? 24,
+          height: size ?? 24,
+        );
+      case RoadSign.turnRight:
+        return Image.asset(
+          'assets/images/right_turn.png',
+          width: size ?? 24,
+          height: size ?? 24,
+        );
+      case RoadSign.goStraight:
+        return Image.asset(
+          'assets/images/straight.png',
+          width: size ?? 24,
+          height: size ?? 24,
+        );
+      default:
+        return Icon(
+          _getSignIcon(sign),
+          color: color ?? Colors.white,
+          size: size ?? 24,
+        );
     }
   }
 

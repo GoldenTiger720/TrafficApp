@@ -58,58 +58,213 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             _buildStatusBar(context, trafficProvider),
             Expanded(
-              child: settings.displayMode == DisplayMode.advanced
-                  ? LayoutBuilder(
-                      builder: (context, constraints) {
-                        return SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minHeight: constraints.maxHeight,
+              child: _buildNewDesignLayout(context, trafficProvider, settings),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNewDesignLayout(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400, maxHeight: 500),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), width: 3),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Top row with traffic light, timer/button, and signs section
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Traffic light
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black87,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                        child: TrafficLightWidget(
+                          state: trafficProvider.currentState,
+                          isMinimalistic: true,
+                          showCountdown: false,
+                          onLongPress: () => _toggleDisplayMode(context),
+                          onDoubleTap: () => _openDetailView(context),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Timer and GO button
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // Timer display
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.black87,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  // Traffic Light Widget - responsive height
-                                  Container(
-                                    constraints: BoxConstraints(
-                                      maxHeight: constraints.maxHeight * 0.8,
-                                      minHeight: 400,
-                                    ),
-                                    child: TrafficLightWidget(
-                                      state: trafficProvider.currentState,
-                                      isMinimalistic: false,
-                                      onLongPress: () => _toggleDisplayMode(context),
-                                      onDoubleTap: () => _openDetailView(context),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  if (trafficProvider.demoMode)
-                                    _buildDemoModeControls(context, trafficProvider),
-                                  const SizedBox(height: 8),
-                                ],
+                            child: Center(
+                              child: Text(
+                                '${trafficProvider.currentState.countdownSeconds ?? 0}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    )
-                  : Center(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
+                          const SizedBox(height: 16),
+                          // GO button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Toggle to green light when GO is pressed
+                                if (trafficProvider.demoMode) {
+                                  trafficProvider.testOverlay(TrafficLightColor.green);
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('GO pressed')),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF90EE90),
+                                foregroundColor: Colors.black,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: const BorderSide(color: Colors.black, width: 2),
+                                ),
+                              ),
+                              child: const Text(
+                                'GO',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // SIGNS section
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blue, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            _buildMinimalisticLayout(context, trafficProvider, settings),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: const BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(6),
+                                  topRight: Radius.circular(6),
+                                ),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'SIGNS',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: trafficProvider.currentState.recognizedSigns.isNotEmpty
+                                    ? Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: trafficProvider.currentState.recognizedSigns
+                                            .take(3)
+                                            .map((sign) => Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 2),
+                                                  child: Text(
+                                                    _getRoadSignName(sign),
+                                                    style: const TextStyle(fontSize: 12),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                      )
+                                    : Icon(
+                                        Icons.remove_red_eye,
+                                        size: 40,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                                      ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
-            ),
-          ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Direction arrows
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                      width: 2,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Left turn arrow
+                    Image.asset(
+                      'assets/images/left_turn.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                    // Straight arrow
+                    Image.asset(
+                      'assets/images/straight.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                    // Right turn arrow
+                    Image.asset(
+                      'assets/images/right_turn.png',
+                      width: 50,
+                      height: 50,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -168,176 +323,6 @@ class _MainScreenState extends State<MainScreen> {
   }
 
 
-  Widget _buildDemoModeControls(BuildContext context, TrafficLightProvider trafficProvider) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12), // Reduced padding
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              AppLocalizations.of(context)?.demoModeControls ?? 'Demo Mode Controls',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith( // Smaller title
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8), // Reduced spacing
-            Text(
-              AppLocalizations.of(context)?.testOverlayColorsShort ?? 'Test overlay colors:',
-              style: Theme.of(context).textTheme.bodySmall, // Smaller text
-            ),
-            const SizedBox(height: 8), // Reduced spacing
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(vertical: 8), // Reduced padding
-                        textStyle: const TextStyle(fontSize: 12), // Smaller text
-                      ),
-                      onPressed: () => trafficProvider.testOverlay(TrafficLightColor.red),
-                      child: Text(
-                        AppLocalizations.of(context)?.red ?? 'Red', 
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        padding: const EdgeInsets.symmetric(vertical: 8), // Reduced padding
-                        textStyle: const TextStyle(fontSize: 12), // Smaller text
-                      ),
-                      onPressed: () => trafficProvider.testOverlay(TrafficLightColor.yellow),
-                      child: Text(
-                        AppLocalizations.of(context)?.yellow ?? 'Yellow', 
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 8), // Reduced padding
-                        textStyle: const TextStyle(fontSize: 12), // Smaller text
-                      ),
-                      onPressed: () => trafficProvider.testOverlay(TrafficLightColor.green),
-                      child: Text(
-                        AppLocalizations.of(context)?.green ?? 'Green', 
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  Widget _buildInfoRow(BuildContext context, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          )),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMinimalisticLayout(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TrafficLightWidget(
-          state: trafficProvider.currentState,
-          isMinimalistic: true,
-          showCountdown: false, // Don't show countdown inside the widget
-          onLongPress: () => _toggleDisplayMode(context),
-          onDoubleTap: () => _openDetailView(context),
-        ),
-        const SizedBox(width: 16),
-        Padding(
-          padding: const EdgeInsets.only(top: 16.0), // Align timer with traffic light top
-          child: _buildExternalTimer(context, trafficProvider.currentState),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildExternalTimer(BuildContext context, TrafficLightState state) {
-    final countdown = state.countdownSeconds ?? 0; // Default to 0 if null
-    final color = _getTimerColor(state.currentColor);
-    
-    return Container(
-      width: 80, // Fixed width
-      height: 80, // Fixed height - perfect circle
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        shape: BoxShape.circle, // Always circular
-        border: Border.all(color: color, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.timer,
-            color: color,
-            size: 16,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '$countdown',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 25,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getTimerColor(TrafficLightColor color) {
-    switch (color) {
-      case TrafficLightColor.red:
-        return Colors.red;
-      case TrafficLightColor.yellow:
-        return Colors.amber;
-      case TrafficLightColor.green:
-        return Colors.green;
-    }
-  }
 
   Widget _buildFloatingActionButtons(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {
     return FloatingActionButton(
@@ -426,5 +411,28 @@ class _MainScreenState extends State<MainScreen> {
         duration: const Duration(seconds: 3),
       ),
     );
+  }
+
+  String _getRoadSignName(RoadSign sign) {
+    switch (sign) {
+      case RoadSign.stop:
+        return 'Stop';
+      case RoadSign.yield:
+        return 'Yield';
+      case RoadSign.speedLimit:
+        return 'Speed Limit';
+      case RoadSign.noEntry:
+        return 'No Entry';
+      case RoadSign.construction:
+        return 'Construction';
+      case RoadSign.pedestrianCrossing:
+        return 'Pedestrian';
+      case RoadSign.turnLeft:
+        return 'Turn Left';
+      case RoadSign.turnRight:
+        return 'Turn Right';
+      case RoadSign.goStraight:
+        return 'Go Straight';
+    }
   }
 }
