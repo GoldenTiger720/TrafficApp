@@ -1417,20 +1417,20 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
       case RoadSign.turnLeft:
         return Image.asset(
           'assets/images/left_turn.png',
-          width: size ?? 24,
-          height: size ?? 24,
+          width: size ?? 48,
+          height: size ?? 48,
         );
       case RoadSign.turnRight:
         return Image.asset(
           'assets/images/right_turn.png',
-          width: size ?? 24,
-          height: size ?? 24,
+          width: size ?? 48,
+          height: size ?? 48,
         );
       case RoadSign.goStraight:
         return Image.asset(
           'assets/images/straight.png',
-          width: size ?? 24,
-          height: size ?? 24,
+          width: size ?? 48,
+          height: size ?? 48,
         );
       default:
         return Icon(

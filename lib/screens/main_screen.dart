@@ -245,20 +245,20 @@ class _MainScreenState extends State<MainScreen> {
                     // Left turn arrow
                     Image.asset(
                       'assets/images/left_turn.png',
-                      width: 50,
-                      height: 50,
+                      width: 100,
+                      height: 100,
                     ),
                     // Straight arrow
                     Image.asset(
                       'assets/images/straight.png',
-                      width: 50,
-                      height: 50,
+                      width: 100,
+                      height: 100,
                     ),
                     // Right turn arrow
                     Image.asset(
                       'assets/images/right_turn.png',
-                      width: 50,
-                      height: 50,
+                      width: 100,
+                      height: 100,
                     ),
                   ],
                 ),
