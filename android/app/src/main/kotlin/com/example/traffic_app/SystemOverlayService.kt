@@ -234,7 +234,7 @@ class SystemOverlayService : Service() {
         timerText = TextView(this).apply {
             text = countdownSeconds.toString()
             textSize = (24 * effectiveSize).toFloat()
-            setTextColor(Color.WHITE)
+            setTextColor(Color.BLACK)
             gravity = Gravity.CENTER
             setBackgroundColor(Color.RED)
             setPadding(

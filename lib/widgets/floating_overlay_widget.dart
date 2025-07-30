@@ -154,7 +154,7 @@ class _FloatingOverlayWidgetState extends State<FloatingOverlayWidget> {
         child: Text(
           '$countdown',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 18 * widget.size,
           ),
