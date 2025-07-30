@@ -336,28 +336,6 @@ class TrafficLightDetailScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      settingsProvider.updateDisplayMode(
-                        settings.displayMode == DisplayMode.minimalistic 
-                            ? DisplayMode.advanced 
-                            : DisplayMode.minimalistic
-                      );
-                    },
-                    icon: Icon(settings.displayMode == DisplayMode.minimalistic 
-                        ? Icons.expand_more 
-                        : Icons.expand_less),
-                    label: Text(settings.displayMode == DisplayMode.minimalistic 
-                        ? (l10n?.advanced ?? 'Advanced')
-                        : (l10n?.minimalistic ?? 'Minimalistic')),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
                       settingsProvider.updateOverlayEnabled(!settings.overlayEnabled);
                     },
                     icon: Icon(settings.overlayEnabled ? Icons.visibility_off : Icons.visibility),
