@@ -97,22 +97,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     (value) => settingsProvider.updateOverlaySize(value),
                     valueFormatter: (value) => '${(value * 100).round()}%',
                   ),
-                  ListTile(
-                    title: Text(AppLocalizations.of(context)?.resetPosition ?? 'Reset Position'),
-                    subtitle: Text(AppLocalizations.of(context)?.moveOverlayToCenter ?? 'Move overlay to center'),
-                    trailing: ElevatedButton(
-                      onPressed: () => settingsProvider.resetOverlayPosition(),
-                      child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(AppLocalizations.of(context)?.resetOverlaySettings ?? 'Reset Overlay Settings'),
-                    subtitle: Text(AppLocalizations.of(context)?.resetTransparencySizeAndPosition ?? 'Reset transparency, size, and position'),
-                    trailing: ElevatedButton(
-                      onPressed: () => _resetOverlaySettings(context, settingsProvider),
-                      child: Text(AppLocalizations.of(context)?.resetOverlay ?? 'Reset Overlay'),
-                    ),
-                  ),
                 ],
               ),
               _buildSection(
@@ -208,14 +192,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       settingsProvider.updateCountdownDuration(validValue);
                     },
                     valueFormatter: (value) => '${value.round()}s',
-                  ),
-                  ListTile(
-                    title: Text(AppLocalizations.of(context)?.resetAllSettings ?? 'Reset All Settings'),
-                    subtitle: Text(AppLocalizations.of(context)?.resetAllSettingsToDefaultValues ?? 'Reset all settings to default values'),
-                    trailing: ElevatedButton(
-                      onPressed: () => _resetSettings(context, settingsProvider),
-                      child: Text(AppLocalizations.of(context)?.resetAll ?? 'Reset All'),
-                    ),
                   ),
                   _buildTestControls(context),
                 ],
@@ -520,58 +496,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
   
-  Future<void> _resetSettings(BuildContext context, SettingsProvider settingsProvider) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)?.resetAllSettings ?? 'Reset All Settings'),
-        content: Text(AppLocalizations.of(context)?.resetAllSettingsConfirm ?? 'This will reset all settings to their default values. Continue?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await settingsProvider.resetToDefaults();
-      context.read<TrafficLightProvider>().setDemoMode(false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.settingsResetToDefaults ?? 'Settings reset to defaults')),
-      );
-    }
-  }
-  
-  Future<void> _resetOverlaySettings(BuildContext context, SettingsProvider settingsProvider) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)?.resetOverlaySettings ?? 'Reset Overlay Settings'),
-        content: Text(AppLocalizations.of(context)?.resetOverlaySettingsConfirm ?? 'This will reset overlay transparency, size, and position to defaults. Continue?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await settingsProvider.resetOverlaySettings();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.overlaySettingsResetToDefaults ?? 'Overlay settings reset to defaults')),
-      );
-    }
-  }
 }
