@@ -330,6 +330,17 @@ class SystemOverlayService : Service() {
                         p.x = p.x.coerceIn(0, displayMetrics.widthPixels - (overlayView?.width ?: 0))
                         p.y = p.y.coerceIn(0, displayMetrics.heightPixels - (overlayView?.height ?: 0))
                         
+                        // Update position ratios for persistence
+                        val maxX = (displayMetrics.widthPixels - (overlayView?.width ?: 0)).toFloat()
+                        val maxY = (displayMetrics.heightPixels - (overlayView?.height ?: 0)).toFloat()
+                        
+                        positionX = if (maxX > 0) p.x.toFloat() / maxX else 0.5f
+                        positionY = if (maxY > 0) p.y.toFloat() / maxY else 0.5f
+                        
+                        // Ensure ratios are between 0 and 1
+                        positionX = positionX.coerceIn(0f, 1f)
+                        positionY = positionY.coerceIn(0f, 1f)
+                        
                         windowManager.updateViewLayout(overlayView, p)
                     }
                     true
@@ -365,9 +376,112 @@ class SystemOverlayService : Service() {
     }
     
     private fun updateOverlaySettings() {
-        // Remove current overlay and recreate with new settings
-        removeOverlay()
-        createSystemOverlay()
+        overlayView?.let { view ->
+            // Update transparency smoothly
+            view.alpha = transparency
+            
+            params?.let { p ->
+                val displayMetrics = resources.displayMetrics
+                val screenWidth = displayMetrics.widthPixels
+                val screenHeight = displayMetrics.heightPixels
+                
+                // Calculate new dimensions with scaling
+                val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
+                val effectiveSize = size * additionalScale
+                
+                val trafficLightWidth = (100 * effectiveSize * displayMetrics.density).toInt()
+                val trafficLightHeight = (240 * effectiveSize * displayMetrics.density).toInt()
+                val timerWidth = (80 * effectiveSize * displayMetrics.density).toInt()
+                val spacing = (16 * effectiveSize * displayMetrics.density).toInt()
+                val padding = (12 * effectiveSize * displayMetrics.density).toInt()
+                
+                val totalWidth = trafficLightWidth + timerWidth + spacing + (padding * 2)
+                val totalHeight = trafficLightHeight + (padding * 2)
+                
+                // Update size
+                p.width = totalWidth
+                p.height = totalHeight
+                
+                // Update position (keep current position if not explicitly changed)
+                p.x = (positionX * (screenWidth - totalWidth)).toInt()
+                p.y = (positionY * (screenHeight - totalHeight)).toInt()
+                
+                // Apply layout changes
+                windowManager.updateViewLayout(view, p)
+                
+                // Update child views with new scaling
+                updateChildViewSizes(effectiveSize)
+            }
+        }
+    }
+    
+    private fun updateChildViewSizes(effectiveSize: Float) {
+        // Update root layout padding
+        val rootLayout = overlayView as? FrameLayout
+        rootLayout?.setPadding(
+            (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+            (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+            (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+            (12 * effectiveSize * resources.displayMetrics.density).toInt()
+        )
+        
+        // Update traffic light container size
+        rootLayout?.let { root ->
+            val trafficLightContainer = root.getChildAt(0)
+            val trafficLightLayoutParams = trafficLightContainer.layoutParams as FrameLayout.LayoutParams
+            trafficLightLayoutParams.width = (100 * effectiveSize * resources.displayMetrics.density).toInt()
+            trafficLightLayoutParams.height = (240 * effectiveSize * resources.displayMetrics.density).toInt()
+            trafficLightLayoutParams.marginEnd = (16 * effectiveSize * resources.displayMetrics.density).toInt()
+            trafficLightContainer.layoutParams = trafficLightLayoutParams
+            
+            // Update timer size and text size
+            val timerLayoutParams = timerText.layoutParams as FrameLayout.LayoutParams
+            timerLayoutParams.width = (80 * effectiveSize * resources.displayMetrics.density).toInt()
+            timerLayoutParams.height = (60 * effectiveSize * resources.displayMetrics.density).toInt()
+            timerText.layoutParams = timerLayoutParams
+            timerText.textSize = (24 * effectiveSize)
+            timerText.setPadding(
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (8 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (8 * effectiveSize * resources.displayMetrics.density).toInt()
+            )
+            
+            // Update traffic light sizes
+            updateTrafficLightSizes(trafficLightContainer, effectiveSize)
+        }
+    }
+    
+    private fun updateTrafficLightSizes(container: View, effectiveSize: Float) {
+        val frameContainer = container as? FrameLayout
+        frameContainer?.let { frame ->
+            val lightSize = (45 * effectiveSize * resources.displayMetrics.density).toInt()
+            val containerHeight = (240 * effectiveSize * resources.displayMetrics.density).toInt()
+            val verticalPadding = (20 * effectiveSize * resources.displayMetrics.density).toInt()
+            val availableHeight = containerHeight - (verticalPadding * 2)
+            val spacing = (availableHeight - (lightSize * 3)) / 2
+            
+            // Update red light
+            val redParams = redLight.layoutParams as FrameLayout.LayoutParams
+            redParams.width = lightSize
+            redParams.height = lightSize
+            redParams.topMargin = verticalPadding
+            redLight.layoutParams = redParams
+            
+            // Update yellow light
+            val yellowParams = yellowLight.layoutParams as FrameLayout.LayoutParams
+            yellowParams.width = lightSize
+            yellowParams.height = lightSize
+            yellowParams.topMargin = verticalPadding + lightSize + spacing
+            yellowLight.layoutParams = yellowParams
+            
+            // Update green light
+            val greenParams = greenLight.layoutParams as FrameLayout.LayoutParams
+            greenParams.width = lightSize
+            greenParams.height = lightSize
+            greenParams.topMargin = verticalPadding + (lightSize * 2) + (spacing * 2)
+            greenLight.layoutParams = greenParams
+        }
     }
     
     private fun removeOverlay() {
