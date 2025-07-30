@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import 'settings_screen.dart';
 import 'event_log_screen.dart';
 import 'traffic_light_detail_screen.dart';
+import 'minimal_mode_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -99,7 +100,7 @@ class _MainScreenState extends State<MainScreen> {
                           state: trafficProvider.currentState,
                           isMinimalistic: true,
                           showCountdown: false,
-                          onLongPress: () => _toggleDisplayMode(context),
+                          onLongPress: () => _navigateToMinimalMode(context),
                           onDoubleTap: () => _openDetailView(context),
                         ),
                       ),
@@ -369,6 +370,15 @@ class _MainScreenState extends State<MainScreen> {
   void _navigateToEventLog(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const EventLogScreen()),
+    );
+  }
+
+  void _navigateToMinimalMode(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const MinimalModeScreen(),
+        fullscreenDialog: true,
+      ),
     );
   }
 
