@@ -29,11 +29,6 @@ class _MainScreenState extends State<MainScreen> {
         return Stack(
           children: [
             _buildBody(context, trafficProvider, settings),
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: _buildFloatingActionButtons(context, trafficProvider, settings),
-            ),
           ],
         );
       },
@@ -325,14 +320,6 @@ class _MainScreenState extends State<MainScreen> {
 
 
 
-  Widget _buildFloatingActionButtons(BuildContext context, TrafficLightProvider trafficProvider, AppSettings settings) {
-    return FloatingActionButton(
-      heroTag: "bug_report",
-      onPressed: _reportBug,
-      tooltip: AppLocalizations.of(context)?.reportBug ?? 'Report Bug',
-      child: const Icon(Icons.bug_report),
-    );
-  }
 
   String _formatTimestamp(DateTime timestamp, BuildContext context) {
     final now = DateTime.now();
@@ -413,15 +400,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void _reportBug() {
-    // In a real app, this would automatically export logs and device info
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)?.bugReportMessage ?? 'Bug report feature would export logs and device info'),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
 
   String _getRoadSignName(RoadSign sign) {
     switch (sign) {
