@@ -168,9 +168,9 @@ class SystemOverlayService : Service() {
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
         
-        // Base dimensions with enhanced scaling for 30% size
-        val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
-        val effectiveSize = size * additionalScale
+        // Base dimensions with smooth scaling
+        // Use a smooth scaling function to avoid jumps at 30%
+        val effectiveSize = size * (0.7f + (size * 0.3f))
         
         val trafficLightWidth = (100 * effectiveSize * displayMetrics.density).toInt()
         val trafficLightHeight = (240 * effectiveSize * displayMetrics.density).toInt()
@@ -207,8 +207,8 @@ class SystemOverlayService : Service() {
     }
     
     private fun createOverlayLayout(): View {
-        val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
-        val effectiveSize = size * additionalScale
+        // Use consistent scaling function
+        val effectiveSize = size * (0.7f + (size * 0.3f))
         
         val rootLayout = FrameLayout(this).apply {
             setBackgroundColor(Color.parseColor("#CC000000"))
@@ -259,8 +259,8 @@ class SystemOverlayService : Service() {
     }
     
     private fun createTrafficLightView(): View {
-        val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
-        val effectiveSize = size * additionalScale
+        // Use consistent scaling function
+        val effectiveSize = size * (0.7f + (size * 0.3f))
         
         val container = FrameLayout(this).apply {
             setBackgroundColor(Color.parseColor("#FF888888"))
@@ -395,9 +395,8 @@ class SystemOverlayService : Service() {
                 val currentX = p.x
                 val currentY = p.y
                 
-                // Calculate new dimensions with scaling
-                val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
-                val effectiveSize = size * additionalScale
+                // Calculate new dimensions with smooth scaling
+                val effectiveSize = size * (0.7f + (size * 0.3f))
                 
                 val trafficLightWidth = (100 * effectiveSize * displayMetrics.density).toInt()
                 val trafficLightHeight = (240 * effectiveSize * displayMetrics.density).toInt()
