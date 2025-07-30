@@ -233,15 +233,15 @@ class SystemOverlayService : Service() {
         // Create timer
         timerText = TextView(this).apply {
             text = countdownSeconds.toString()
-            textSize = (24 * effectiveSize).toFloat()
+            textSize = (48 * effectiveSize).toFloat()
             setTextColor(Color.BLACK)
             gravity = Gravity.CENTER
             setBackgroundColor(Color.RED)
             setPadding(
                 (12 * effectiveSize * resources.displayMetrics.density).toInt(),
-                (8 * effectiveSize * resources.displayMetrics.density).toInt(),
+                0,
                 (12 * effectiveSize * resources.displayMetrics.density).toInt(),
-                (8 * effectiveSize * resources.displayMetrics.density).toInt()
+                0
             )
         }
         
@@ -481,12 +481,12 @@ class SystemOverlayService : Service() {
             timerLayoutParams.width = (80 * effectiveSize * resources.displayMetrics.density).toInt()
             timerLayoutParams.height = (60 * effectiveSize * resources.displayMetrics.density).toInt()
             timerText.layoutParams = timerLayoutParams
-            timerText.textSize = (24 * effectiveSize)
+            timerText.textSize = (48 * effectiveSize)
             timerText.setPadding(
                 (12 * effectiveSize * resources.displayMetrics.density).toInt(),
-                (8 * effectiveSize * resources.displayMetrics.density).toInt(),
+                0,
                 (12 * effectiveSize * resources.displayMetrics.density).toInt(),
-                (8 * effectiveSize * resources.displayMetrics.density).toInt()
+                0
             )
             
             // Update traffic light sizes
