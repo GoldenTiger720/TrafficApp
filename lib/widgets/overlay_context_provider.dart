@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../services/system_overlay_service.dart';
 import '../providers/settings_provider.dart';
 import '../providers/traffic_light_provider.dart';
+import '../models/app_settings.dart';
+import '../models/traffic_light_state.dart';
 
 class OverlayContextProvider extends StatefulWidget {
   final Widget child;
@@ -18,6 +20,8 @@ class OverlayContextProvider extends StatefulWidget {
 
 class _OverlayContextProviderState extends State<OverlayContextProvider> {
   bool _initialized = false;
+  AppSettings? _lastSettings;
+  TrafficLightState? _lastState;
 
   @override
   void initState() {
@@ -45,9 +49,12 @@ class _OverlayContextProviderState extends State<OverlayContextProvider> {
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     final trafficLightProvider = Provider.of<TrafficLightProvider>(context, listen: false);
 
-    debugPrint('OverlayContextProvider: _updateSystemOverlay - overlayEnabled: ${settingsProvider.settings.overlayEnabled}');
+    final currentSettings = settingsProvider.settings;
+    final currentState = trafficLightProvider.currentState;
+
+    debugPrint('OverlayContextProvider: _updateSystemOverlay - overlayEnabled: ${currentSettings.overlayEnabled}');
     
-    if (settingsProvider.settings.overlayEnabled) {
+    if (currentSettings.overlayEnabled) {
       // Check permission first
       final hasPermission = await SystemOverlayService.checkOverlayPermission();
       if (!hasPermission) {
@@ -59,18 +66,56 @@ class _OverlayContextProviderState extends State<OverlayContextProvider> {
       // Start or update system overlay
       if (!SystemOverlayService.isServiceRunning) {
         await SystemOverlayService.startSystemOverlay(
-          settings: settingsProvider.settings,
-          state: trafficLightProvider.currentState,
+          settings: currentSettings,
+          state: currentState,
         );
+        _lastSettings = currentSettings;
+        _lastState = currentState;
       } else {
-        await SystemOverlayService.updateOverlayState(trafficLightProvider.currentState);
-        await SystemOverlayService.updateOverlaySettings(settingsProvider.settings);
+        // Only update what has changed
+        bool stateChanged = _lastState == null ||
+          _lastState!.currentColor != currentState.currentColor ||
+          _lastState!.countdownSeconds != currentState.countdownSeconds;
+          
+        bool positionChanged = _lastSettings == null ||
+          _lastSettings!.overlayPositionX != currentSettings.overlayPositionX ||
+          _lastSettings!.overlayPositionY != currentSettings.overlayPositionY;
+          
+        bool nonPositionSettingsChanged = _lastSettings == null ||
+          _lastSettings!.overlayTransparency != currentSettings.overlayTransparency ||
+          _lastSettings!.overlaySize != currentSettings.overlaySize;
+
+        if (stateChanged) {
+          debugPrint('OverlayContextProvider: Updating overlay state only');
+          await SystemOverlayService.updateOverlayState(currentState);
+          _lastState = currentState;
+        }
+        
+        if (positionChanged && !nonPositionSettingsChanged) {
+          debugPrint('OverlayContextProvider: Updating overlay position only');
+          await SystemOverlayService.updateOverlayPosition(
+            currentSettings.overlayPositionX,
+            currentSettings.overlayPositionY,
+          );
+          _lastSettings = currentSettings;
+        } else if (nonPositionSettingsChanged) {
+          debugPrint('OverlayContextProvider: Updating overlay settings (including position)');
+          await SystemOverlayService.updateOverlaySettings(currentSettings);
+          _lastSettings = currentSettings;
+        } else if (positionChanged) {
+          // This handles the case where both position and non-position settings changed
+          debugPrint('OverlayContextProvider: Updating overlay settings (including position)');
+          await SystemOverlayService.updateOverlaySettings(currentSettings);
+          _lastSettings = currentSettings;
+        }
       }
     } else {
       // Stop system overlay if running
       if (SystemOverlayService.isServiceRunning) {
         await SystemOverlayService.stopSystemOverlay();
       }
+      _lastSettings = null;
+      _lastState = null;
     }
   }
 

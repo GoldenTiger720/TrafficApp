@@ -124,6 +124,27 @@ class SystemOverlayService {
     }
   }
 
+  /// Update only the system overlay position
+  static Future<bool> updateOverlayPosition(double positionX, double positionY) async {
+    if (!Platform.isAndroid || !_isServiceRunning) return false;
+    
+    try {
+      final bool result = await _channel.invokeMethod('updateSystemOverlayPosition', {
+        'positionX': positionX,
+        'positionY': positionY,
+      });
+      
+      if (result) {
+        debugPrint('SystemOverlayService: Overlay position updated - x: $positionX, y: $positionY');
+      }
+      
+      return result;
+    } catch (e) {
+      debugPrint('SystemOverlayService: Failed to update overlay position: $e');
+      return false;
+    }
+  }
+
   /// Convert TrafficLightColor enum to string
   static String _getColorString(TrafficLightColor color) {
     switch (color) {

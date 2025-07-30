@@ -84,6 +84,18 @@ class MainActivity : FlutterActivity() {
                     startService(updateIntent)
                     result.success(true)
                 }
+                "updateSystemOverlayPosition" -> {
+                    val positionX = call.argument<Double>("positionX")?.toFloat() ?: 0.5f
+                    val positionY = call.argument<Double>("positionY")?.toFloat() ?: 0.5f
+                    
+                    val updateIntent = Intent(this, SystemOverlayService::class.java).apply {
+                        action = SystemOverlayService.ACTION_UPDATE_POSITION
+                        putExtra(SystemOverlayService.EXTRA_POSITION_X, positionX)
+                        putExtra(SystemOverlayService.EXTRA_POSITION_Y, positionY)
+                    }
+                    startService(updateIntent)
+                    result.success(true)
+                }
                 else -> {
                     result.notImplemented()
                 }

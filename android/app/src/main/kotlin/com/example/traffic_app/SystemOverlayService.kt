@@ -49,6 +49,7 @@ class SystemOverlayService : Service() {
         
         const val ACTION_UPDATE_STATE = "com.example.traffic_app.SYSTEM_UPDATE_STATE"
         const val ACTION_UPDATE_SETTINGS = "com.example.traffic_app.SYSTEM_UPDATE_SETTINGS"
+        const val ACTION_UPDATE_POSITION = "com.example.traffic_app.SYSTEM_UPDATE_POSITION"
         const val ACTION_STOP_OVERLAY = "com.example.traffic_app.SYSTEM_STOP_OVERLAY"
         
         const val EXTRA_COLOR = "color"
@@ -81,6 +82,11 @@ class SystemOverlayService : Service() {
                 positionX = intent.getFloatExtra(EXTRA_POSITION_X, 0.5f)
                 positionY = intent.getFloatExtra(EXTRA_POSITION_Y, 0.5f)
                 updateOverlaySettings()
+            }
+            ACTION_UPDATE_POSITION -> {
+                positionX = intent.getFloatExtra(EXTRA_POSITION_X, 0.5f)
+                positionY = intent.getFloatExtra(EXTRA_POSITION_Y, 0.5f)
+                updateOverlayPosition()
             }
             ACTION_STOP_OVERLAY -> {
                 stopSelf()
@@ -385,6 +391,10 @@ class SystemOverlayService : Service() {
                 val screenWidth = displayMetrics.widthPixels
                 val screenHeight = displayMetrics.heightPixels
                 
+                // Store current absolute position before size changes
+                val currentX = p.x
+                val currentY = p.y
+                
                 // Calculate new dimensions with scaling
                 val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
                 val effectiveSize = size * additionalScale
@@ -402,15 +412,47 @@ class SystemOverlayService : Service() {
                 p.width = totalWidth
                 p.height = totalHeight
                 
-                // Update position (keep current position if not explicitly changed)
-                p.x = (positionX * (screenWidth - totalWidth)).toInt()
-                p.y = (positionY * (screenHeight - totalHeight)).toInt()
+                // Preserve current position, but ensure it stays on screen
+                p.x = currentX.coerceIn(0, screenWidth - totalWidth)
+                p.y = currentY.coerceIn(0, screenHeight - totalHeight)
+                
+                // Update position ratios based on actual position for persistence
+                val maxX = (screenWidth - totalWidth).toFloat()
+                val maxY = (screenHeight - totalHeight).toFloat()
+                
+                positionX = if (maxX > 0) p.x.toFloat() / maxX else 0.5f
+                positionY = if (maxY > 0) p.y.toFloat() / maxY else 0.5f
+                
+                // Ensure ratios are between 0 and 1
+                positionX = positionX.coerceIn(0f, 1f)
+                positionY = positionY.coerceIn(0f, 1f)
                 
                 // Apply layout changes
                 windowManager.updateViewLayout(view, p)
                 
                 // Update child views with new scaling
                 updateChildViewSizes(effectiveSize)
+            }
+        }
+    }
+
+    private fun updateOverlayPosition() {
+        overlayView?.let { view ->
+            params?.let { p ->
+                val displayMetrics = resources.displayMetrics
+                val screenWidth = displayMetrics.widthPixels
+                val screenHeight = displayMetrics.heightPixels
+                
+                // Update position using stored ratios
+                p.x = (positionX * (screenWidth - p.width)).toInt()
+                p.y = (positionY * (screenHeight - p.height)).toInt()
+                
+                // Keep overlay on screen
+                p.x = p.x.coerceIn(0, screenWidth - p.width)
+                p.y = p.y.coerceIn(0, screenHeight - p.height)
+                
+                // Apply layout changes
+                windowManager.updateViewLayout(view, p)
             }
         }
     }

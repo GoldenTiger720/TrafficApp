@@ -40,7 +40,10 @@ class _DraggableFloatingOverlayState extends State<DraggableFloatingOverlay> {
   @override
   void didUpdateWidget(DraggableFloatingOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialX != widget.initialX || oldWidget.initialY != widget.initialY) {
+    // Only update position if it's been explicitly changed from settings
+    // and we haven't moved it manually (preserve user's drag position)
+    if ((oldWidget.initialX != widget.initialX || oldWidget.initialY != widget.initialY) && 
+        !_hasMoved && !_isDragging) {
       setState(() {
         _position = Offset(widget.initialX, widget.initialY);
       });
@@ -100,8 +103,8 @@ class _DraggableFloatingOverlayState extends State<DraggableFloatingOverlay> {
           // Notify parent of position change
           widget.onPositionChanged?.call(_position.dx, _position.dy);
           
-          // Reset moved flag after a delay
-          Future.delayed(const Duration(milliseconds: 100), () {
+          // Reset moved flag after a longer delay to prevent unwanted position resets
+          Future.delayed(const Duration(milliseconds: 2000), () {
             if (mounted) {
               setState(() {
                 _hasMoved = false;
