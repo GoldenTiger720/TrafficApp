@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import '../models/traffic_light_state.dart';
 import '../l10n/app_localizations.dart';
+import '../constants/colors.dart';
 
 class TrafficLightWidget extends StatefulWidget {
   final TrafficLightState state;
@@ -89,11 +90,11 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Color _getCurrentLightColor() {
     switch (widget.state.currentColor) {
       case TrafficLightColor.red:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case TrafficLightColor.yellow:
-        return Colors.amber;
+        return TrafficLightColors.vividYellow;
       case TrafficLightColor.green:
-        return Colors.green;
+        return TrafficLightColors.vividGreen;
     }
   }
 
@@ -365,11 +366,11 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Color _getStatusColor() {
     switch (widget.state.currentColor) {
       case TrafficLightColor.red:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case TrafficLightColor.yellow:
-        return Colors.amber;
+        return TrafficLightColors.vividYellow;
       case TrafficLightColor.green:
-        return Colors.green;
+        return TrafficLightColors.vividGreen;
     }
   }
 
@@ -1140,16 +1141,16 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
 
     switch (color) {
       case TrafficLightColor.red:
-        lightColor = isActive ? Colors.red : Colors.red.withOpacity(0.3);
-        shadowColor = Colors.red;
+        lightColor = isActive ? TrafficLightColors.vividRed : TrafficLightColors.vividRed.withOpacity(0.3);
+        shadowColor = TrafficLightColors.vividRed;
         break;
       case TrafficLightColor.yellow:
-        lightColor = isActive ? Colors.amber : Colors.amber.withOpacity(0.3);
-        shadowColor = Colors.amber;
+        lightColor = isActive ? TrafficLightColors.vividYellow : TrafficLightColors.vividYellow.withOpacity(0.3);
+        shadowColor = TrafficLightColors.vividYellow;
         break;
       case TrafficLightColor.green:
-        lightColor = isActive ? Colors.green : Colors.green.withOpacity(0.3);
-        shadowColor = Colors.green;
+        lightColor = isActive ? TrafficLightColors.vividGreen : TrafficLightColors.vividGreen.withOpacity(0.3);
+        shadowColor = TrafficLightColors.vividGreen;
         break;
     }
 
@@ -1245,22 +1246,22 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Color _getTimerColor() {
     switch (widget.state.currentColor) {
       case TrafficLightColor.red:
-        return Colors.red.withOpacity(0.8);
+        return TrafficLightColors.vividRed.withOpacity(0.8);
       case TrafficLightColor.yellow:
-        return Colors.amber.withOpacity(0.8);
+        return TrafficLightColors.vividYellow.withOpacity(0.8);
       case TrafficLightColor.green:
-        return Colors.green.withOpacity(0.8);
+        return TrafficLightColors.vividGreen.withOpacity(0.8);
     }
   }
 
   Color _getTimerBorderColor() {
     switch (widget.state.currentColor) {
       case TrafficLightColor.red:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case TrafficLightColor.yellow:
-        return Colors.amber;
+        return TrafficLightColors.vividYellow;
       case TrafficLightColor.green:
-        return Colors.green;
+        return TrafficLightColors.vividGreen;
     }
   }
 
@@ -1271,15 +1272,15 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     switch (color) {
       case TrafficLightColor.red:
         lightColor = isActive ? Colors.red : Colors.red.withOpacity(0.3);
-        shadowColor = isActive ? Colors.red.withOpacity(0.6) : Colors.transparent;
+        shadowColor = isActive ? TrafficLightColors.vividRed.withOpacity(0.6) : Colors.transparent;
         break;
       case TrafficLightColor.yellow:
         lightColor = isActive ? Colors.amber : Colors.amber.withOpacity(0.3);
-        shadowColor = isActive ? Colors.amber.withOpacity(0.6) : Colors.transparent;
+        shadowColor = isActive ? TrafficLightColors.vividYellow.withOpacity(0.6) : Colors.transparent;
         break;
       case TrafficLightColor.green:
         lightColor = isActive ? Colors.green : Colors.green.withOpacity(0.3);
-        shadowColor = isActive ? Colors.green.withOpacity(0.6) : Colors.transparent;
+        shadowColor = isActive ? TrafficLightColors.vividGreen.withOpacity(0.6) : Colors.transparent;
         break;
     }
 
@@ -1371,17 +1372,17 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   Color _getSignColor(RoadSign sign) {
     switch (sign) {
       case RoadSign.stop:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case RoadSign.yield:
         return Colors.orange;
       case RoadSign.speedLimit:
         return Colors.blue;
       case RoadSign.noEntry:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case RoadSign.construction:
-        return Colors.amber;
+        return TrafficLightColors.vividYellow;
       case RoadSign.pedestrianCrossing:
-        return Colors.green;
+        return TrafficLightColors.vividGreen;
       case RoadSign.turnLeft:
       case RoadSign.turnRight:
       case RoadSign.goStraight:

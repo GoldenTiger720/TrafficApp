@@ -9,6 +9,7 @@ import '../services/event_log_service.dart';
 import '../services/overlay_permission_service.dart';
 import '../models/traffic_light_state.dart';
 import '../l10n/app_localizations.dart';
+import '../constants/colors.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -343,17 +344,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              style: ElevatedButton.styleFrom(backgroundColor: TrafficLightColors.vividRed),
               onPressed: () => context.read<TrafficLightProvider>().testOverlay(TrafficLightColor.red),
               child: Text(AppLocalizations.of(context)?.red ?? 'Red', style: const TextStyle(color: Colors.white)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+              style: ElevatedButton.styleFrom(backgroundColor: TrafficLightColors.vividYellow),
               onPressed: () => context.read<TrafficLightProvider>().testOverlay(TrafficLightColor.yellow),
               child: Text(AppLocalizations.of(context)?.yellow ?? 'Yellow', style: const TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              style: ElevatedButton.styleFrom(backgroundColor: TrafficLightColors.vividGreen),
               onPressed: () => context.read<TrafficLightProvider>().testOverlay(TrafficLightColor.green),
               child: Text(AppLocalizations.of(context)?.green ?? 'Green', style: const TextStyle(color: Colors.white)),
             ),

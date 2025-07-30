@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/traffic_light_provider.dart';
 import '../widgets/traffic_light_widget.dart';
 import '../models/traffic_light_state.dart';
+import '../constants/colors.dart';
 
 class MinimalModeScreen extends StatelessWidget {
   const MinimalModeScreen({super.key});
@@ -107,11 +108,11 @@ class MinimalModeScreen extends StatelessWidget {
   Color _getTimerColor(TrafficLightColor color) {
     switch (color) {
       case TrafficLightColor.red:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case TrafficLightColor.yellow:
-        return Colors.amber;
+        return TrafficLightColors.vividYellow;
       case TrafficLightColor.green:
-        return Colors.green;
+        return TrafficLightColors.vividGreen;
     }
   }
 }

@@ -5,6 +5,7 @@ import '../models/app_settings.dart';
 import '../providers/traffic_light_provider.dart';
 import '../providers/settings_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../constants/colors.dart';
 
 class TrafficLightDetailScreen extends StatelessWidget {
   const TrafficLightDetailScreen({super.key});
@@ -87,16 +88,16 @@ class TrafficLightDetailScreen extends StatelessWidget {
 
     switch (color) {
       case TrafficLightColor.red:
-        lightColor = isActive ? Colors.red : Colors.red.withOpacity(0.2);
-        shadowColor = Colors.red;
+        lightColor = isActive ? TrafficLightColors.vividRed : TrafficLightColors.vividRed.withOpacity(0.2);
+        shadowColor = TrafficLightColors.vividRed;
         break;
       case TrafficLightColor.yellow:
-        lightColor = isActive ? Colors.amber : Colors.amber.withOpacity(0.2);
-        shadowColor = Colors.amber;
+        lightColor = isActive ? TrafficLightColors.vividYellow : TrafficLightColors.vividYellow.withOpacity(0.2);
+        shadowColor = TrafficLightColors.vividYellow;
         break;
       case TrafficLightColor.green:
-        lightColor = isActive ? Colors.green : Colors.green.withOpacity(0.2);
-        shadowColor = Colors.green;
+        lightColor = isActive ? TrafficLightColors.vividGreen : TrafficLightColors.vividGreen.withOpacity(0.2);
+        shadowColor = TrafficLightColors.vividGreen;
         break;
     }
 
@@ -278,17 +279,17 @@ class TrafficLightDetailScreen extends StatelessWidget {
               children: [
                 _buildDemoButton(
                   l10n?.red ?? 'Red',
-                  Colors.red,
+                  TrafficLightColors.vividRed,
                   () => provider.testOverlay(TrafficLightColor.red),
                 ),
                 _buildDemoButton(
                   l10n?.yellow ?? 'Yellow',
-                  Colors.amber,
+                  TrafficLightColors.vividYellow,
                   () => provider.testOverlay(TrafficLightColor.yellow),
                 ),
                 _buildDemoButton(
                   l10n?.green ?? 'Green',
-                  Colors.green,
+                  TrafficLightColors.vividGreen,
                   () => provider.testOverlay(TrafficLightColor.green),
                 ),
               ],
@@ -380,11 +381,11 @@ class TrafficLightDetailScreen extends StatelessWidget {
   Color _getColorForSignal(TrafficLightColor color) {
     switch (color) {
       case TrafficLightColor.red:
-        return Colors.red;
+        return TrafficLightColors.vividRed;
       case TrafficLightColor.yellow:
-        return Colors.amber;
+        return TrafficLightColors.vividYellow;
       case TrafficLightColor.green:
-        return Colors.green;
+        return TrafficLightColors.vividGreen;
     }
   }
 
