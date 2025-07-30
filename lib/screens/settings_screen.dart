@@ -213,6 +213,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ],
               ),
+              _buildSection(
+                'Reset',
+                [
+                  ListTile(
+                    title: Text(AppLocalizations.of(context)?.resetAllSettings ?? 'Reset All Settings'),
+                    subtitle: Text(AppLocalizations.of(context)?.resetAllSettingsToDefaultValues ?? 'Reset all settings to default values'),
+                    trailing: ElevatedButton(
+                      onPressed: () => _resetAllSettings(context, settingsProvider),
+                      child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
+                    ),
+                  ),
+                ],
+              ),
             ],
           );
         },
@@ -496,4 +509,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
   
+  Future<void> _resetAllSettings(BuildContext context, SettingsProvider settingsProvider) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)?.resetAllSettings ?? 'Reset All Settings'),
+        content: Text(AppLocalizations.of(context)?.resetAllSettingsConfirm ?? 'This will reset all settings to their default values. Continue?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(AppLocalizations.of(context)?.reset ?? 'Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final trafficLightProvider = context.read<TrafficLightProvider>();
+      final connectionService = context.read<ConnectionService>();
+      
+      // Exit demo mode if currently active
+      if (trafficLightProvider.demoMode) {
+        trafficLightProvider.setDemoMode(false);
+      }
+      
+      // Disconnect from device if connected
+      if (trafficLightProvider.isConnected) {
+        await connectionService.disconnect();
+      }
+      
+      // Reset all settings to defaults
+      await settingsProvider.resetToDefaults();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)?.settingsResetToDefaults ?? 'Settings reset to defaults')),
+      );
+    }
+  }
 }
