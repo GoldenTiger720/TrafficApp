@@ -9,7 +9,6 @@ import 'services/connection_service.dart';
 import 'services/notification_service.dart';
 import 'services/event_log_service.dart';
 import 'services/app_lifecycle_observer.dart';
-import 'widgets/app_navigation_scaffold.dart';
 import 'screens/splash_screen.dart';
 import 'models/app_settings.dart';
 import 'l10n/app_localizations.dart';
