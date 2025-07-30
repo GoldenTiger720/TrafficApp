@@ -171,17 +171,43 @@ class TrafficLightProvider extends ChangeNotifier {
 
   List<RoadSign> _getRandomSigns() {
     final random = Random();
-    final signs = RoadSign.values;
-    final count = random.nextInt(3);
     
-    if (count == 0) return [];
+    // Create realistic sign combinations based on traffic scenarios
+    final signScenarios = [
+      // Intersection scenarios
+      [RoadSign.stop, RoadSign.turnLeft, RoadSign.turnRight],
+      [RoadSign.yield, RoadSign.goStraight],
+      [RoadSign.turnLeft, RoadSign.noEntry],
+      [RoadSign.turnRight, RoadSign.speedLimit],
+      
+      // Construction/maintenance scenarios
+      [RoadSign.construction, RoadSign.speedLimit],
+      [RoadSign.construction, RoadSign.yield],
+      
+      // Pedestrian scenarios
+      [RoadSign.pedestrianCrossing, RoadSign.speedLimit],
+      [RoadSign.pedestrianCrossing],
+      
+      // Highway scenarios
+      [RoadSign.speedLimit, RoadSign.goStraight],
+      [RoadSign.speedLimit],
+      
+      // Complex intersections
+      [RoadSign.stop, RoadSign.turnLeft, RoadSign.turnRight, RoadSign.goStraight],
+      [RoadSign.yield, RoadSign.pedestrianCrossing, RoadSign.speedLimit],
+      
+      // Single signs
+      [RoadSign.stop],
+      [RoadSign.yield],
+      [RoadSign.noEntry],
+      
+      // Empty (no signs detected)
+      [],
+      [],
+    ];
     
-    final selectedSigns = <RoadSign>[];
-    for (int i = 0; i < count; i++) {
-      selectedSigns.add(signs[random.nextInt(signs.length)]);
-    }
-    
-    return selectedSigns.toSet().toList();
+    // Select a random scenario
+    return signScenarios[random.nextInt(signScenarios.length)].cast<RoadSign>();
   }
 
   void testOverlay(TrafficLightColor color) {

@@ -127,35 +127,35 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          // GO button
-                          SizedBox(
+                          // Traffic Signal Status Display
+                          Container(
                             width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Toggle to green light when GO is pressed
-                                if (trafficProvider.demoMode) {
-                                  trafficProvider.testOverlay(TrafficLightColor.green);
-                                }
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('GO pressed')),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF90EE90),
-                                foregroundColor: Colors.black,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  side: const BorderSide(color: Colors.black, width: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: _getSignalStatusColor(trafficProvider.currentState.currentColor),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  _getSignalStatusText(trafficProvider.currentState.currentColor),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: _getSignalTextColor(trafficProvider.currentState.currentColor),
+                                  ),
                                 ),
-                              ),
-                              child: const Text(
-                                'GO',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                                const SizedBox(height: 4),
+                                Text(
+                                  _getSignalDescription(trafficProvider.currentState.currentColor),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: _getSignalTextColor(trafficProvider.currentState.currentColor),
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
@@ -194,27 +194,63 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                             ),
                             Expanded(
-                              child: Center(
-                                child: trafficProvider.currentState.recognizedSigns.isNotEmpty
-                                    ? Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: trafficProvider.currentState.recognizedSigns
-                                            .take(3)
-                                            .map((sign) => Padding(
-                                                  padding: const EdgeInsets.symmetric(vertical: 2),
-                                                  child: Text(
-                                                    _getRoadSignName(sign),
-                                                    style: const TextStyle(fontSize: 12),
+                              child: trafficProvider.currentState.recognizedSigns.isNotEmpty
+                                  ? ListView.builder(
+                                      padding: const EdgeInsets.all(8),
+                                      itemCount: trafficProvider.currentState.recognizedSigns.length,
+                                      itemBuilder: (context, index) {
+                                        final sign = trafficProvider.currentState.recognizedSigns[index];
+                                        return Container(
+                                          margin: const EdgeInsets.symmetric(vertical: 2),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(4),
+                                            border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                _getRoadSignIcon(sign),
+                                                size: 16,
+                                                color: Colors.blue,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: Text(
+                                                  _getRoadSignName(sign),
+                                                  style: const TextStyle(
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w500,
                                                   ),
-                                                ))
-                                            .toList(),
-                                      )
-                                    : Icon(
-                                        Icons.remove_red_eye,
-                                        size: 40,
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.remove_red_eye,
+                                            size: 36,
+                                            color: Colors.grey,
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'No signs\ndetected',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                              ),
+                                    ),
                             ),
                           ],
                         ),
@@ -421,6 +457,73 @@ class _MainScreenState extends State<MainScreen> {
         return 'Turn Right';
       case RoadSign.goStraight:
         return 'Go Straight';
+    }
+  }
+
+  IconData _getRoadSignIcon(RoadSign sign) {
+    switch (sign) {
+      case RoadSign.stop:
+        return Icons.stop;
+      case RoadSign.yield:
+        return Icons.warning;
+      case RoadSign.speedLimit:
+        return Icons.speed;
+      case RoadSign.noEntry:
+        return Icons.do_not_disturb;
+      case RoadSign.construction:
+        return Icons.construction;
+      case RoadSign.pedestrianCrossing:
+        return Icons.accessibility;
+      case RoadSign.turnLeft:
+        return Icons.turn_left;
+      case RoadSign.turnRight:
+        return Icons.turn_right;
+      case RoadSign.goStraight:
+        return Icons.straight;
+    }
+  }
+
+  Color _getSignalStatusColor(TrafficLightColor color) {
+    switch (color) {
+      case TrafficLightColor.red:
+        return const Color(0xFFFFCDD2); // Light red background
+      case TrafficLightColor.yellow:
+        return const Color(0xFFFFF9C4); // Light yellow background
+      case TrafficLightColor.green:
+        return const Color(0xFFC8E6C9); // Light green background
+    }
+  }
+
+  Color _getSignalTextColor(TrafficLightColor color) {
+    switch (color) {
+      case TrafficLightColor.red:
+        return const Color(0xFFB71C1C); // Dark red text
+      case TrafficLightColor.yellow:
+        return const Color(0xFFE65100); // Dark orange text
+      case TrafficLightColor.green:
+        return const Color(0xFF1B5E20); // Dark green text
+    }
+  }
+
+  String _getSignalStatusText(TrafficLightColor color) {
+    switch (color) {
+      case TrafficLightColor.red:
+        return 'STOP';
+      case TrafficLightColor.yellow:
+        return 'CAUTION';
+      case TrafficLightColor.green:
+        return 'GO';
+    }
+  }
+
+  String _getSignalDescription(TrafficLightColor color) {
+    switch (color) {
+      case TrafficLightColor.red:
+        return 'Complete stop\nrequired';
+      case TrafficLightColor.yellow:
+        return 'Prepare to stop\nif safe';
+      case TrafficLightColor.green:
+        return 'Proceed when\nsafe';
     }
   }
 }
