@@ -7,7 +7,6 @@ import '../models/event_log.dart';
 import '../services/connection_service.dart';
 import '../services/notification_service.dart';
 import '../services/event_log_service.dart';
-import '../services/global_overlay_manager.dart';
 import '../providers/settings_provider.dart';
 
 class TrafficLightProvider extends ChangeNotifier {
@@ -35,10 +34,6 @@ class TrafficLightProvider extends ChangeNotifier {
     _connectionService.dataStream.listen(_handleIncomingData);
     _connectionService.connectionStatusStream.listen(_handleConnectionStatus);
     
-    // Send initial state to overlay manager
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      GlobalOverlayManager().updateTrafficLightState(_currentState);
-    });
   }
 
   TrafficLightState get currentState => _currentState;
@@ -70,7 +65,6 @@ class TrafficLightProvider extends ChangeNotifier {
     }
 
     // Always update global overlay manager with new state
-    GlobalOverlayManager().updateTrafficLightState(newState);
 
     notifyListeners();
   }
@@ -162,7 +156,6 @@ class TrafficLightProvider extends ChangeNotifier {
         
         _currentState = updatedState;
         // Update global overlay manager with countdown changes
-        GlobalOverlayManager().updateTrafficLightState(updatedState);
         notifyListeners();
       }
     });

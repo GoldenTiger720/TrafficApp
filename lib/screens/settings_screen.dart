@@ -6,7 +6,7 @@ import '../providers/settings_provider.dart';
 import '../providers/traffic_light_provider.dart';
 import '../services/connection_service.dart';
 import '../services/event_log_service.dart';
-import '../services/overlay_service.dart';
+import '../services/overlay_permission_service.dart';
 import '../models/traffic_light_state.dart';
 import '../l10n/app_localizations.dart';
 
@@ -30,7 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _checkOverlayPermission() async {
     if (Platform.isAndroid) {
-      final hasPermission = await OverlayService.checkOverlayPermission();
+      final hasPermission = await OverlayPermissionService.checkOverlayPermission();
       setState(() {
         _hasOverlayPermission = hasPermission;
       });
@@ -43,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _requestOverlayPermission() async {
     if (Platform.isAndroid) {
-      await OverlayService.requestOverlayPermission();
+      await OverlayPermissionService.requestOverlayPermission();
       // Check again after some delay
       await Future.delayed(const Duration(seconds: 1));
       _checkOverlayPermission();

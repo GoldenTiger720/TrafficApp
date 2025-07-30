@@ -66,16 +66,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBIPzti9FrvEUiceFu5MNIawPdIeVcBMhc" />
             
-        <!-- Background service for overlay -->
-        <service
-            android:name=".TrafficLightOverlayService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="traffic_light_overlay" />
-        </service>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

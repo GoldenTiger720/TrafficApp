@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import '../services/global_overlay_manager.dart';
 
 class AppLifecycleObserver with WidgetsBindingObserver {
   static final AppLifecycleObserver _instance = AppLifecycleObserver._internal();
@@ -13,7 +12,6 @@ class AppLifecycleObserver with WidgetsBindingObserver {
 
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    GlobalOverlayManager().dispose();
   }
 
   @override
@@ -36,8 +34,7 @@ class AppLifecycleObserver with WidgetsBindingObserver {
       case AppLifecycleState.detached:
         // App is detached, clean up overlay
         debugPrint('App detached - disposing overlay');
-        GlobalOverlayManager().dispose();
-        break;
+            break;
       case AppLifecycleState.hidden:
         // App is hidden but overlay should stay active
         debugPrint('App hidden - overlay continues in background');

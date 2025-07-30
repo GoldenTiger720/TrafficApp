@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../widgets/app_navigation_scaffold.dart';
+import '../widgets/overlay_context_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool autoNavigate;
@@ -46,7 +47,11 @@ class _SplashScreenState extends State<SplashScreen>
       _timer = Timer(const Duration(seconds: 2), () {
         if (mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const AppNavigationScaffold(initialRoute: '/home')),
+            MaterialPageRoute(
+              builder: (context) => const OverlayContextProvider(
+                child: AppNavigationScaffold(initialRoute: '/home'),
+              ),
+            ),
           );
         }
       });
