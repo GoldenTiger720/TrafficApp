@@ -162,12 +162,15 @@ class SystemOverlayService : Service() {
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
         
-        // Base dimensions (smaller for system overlay)
-        val trafficLightWidth = (80 * size * displayMetrics.density).toInt()
-        val trafficLightHeight = (200 * size * displayMetrics.density).toInt()
-        val timerWidth = (60 * size * displayMetrics.density).toInt()
-        val spacing = (12 * size * displayMetrics.density).toInt()
-        val padding = (8 * size * displayMetrics.density).toInt()
+        // Base dimensions with enhanced scaling for 30% size
+        val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
+        val effectiveSize = size * additionalScale
+        
+        val trafficLightWidth = (100 * effectiveSize * displayMetrics.density).toInt()
+        val trafficLightHeight = (240 * effectiveSize * displayMetrics.density).toInt()
+        val timerWidth = (80 * effectiveSize * displayMetrics.density).toInt()
+        val spacing = (16 * effectiveSize * displayMetrics.density).toInt()
+        val padding = (12 * effectiveSize * displayMetrics.density).toInt()
         
         val totalWidth = trafficLightWidth + timerWidth + spacing + (padding * 2)
         val totalHeight = trafficLightHeight + (padding * 2)
@@ -198,44 +201,47 @@ class SystemOverlayService : Service() {
     }
     
     private fun createOverlayLayout(): View {
+        val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
+        val effectiveSize = size * additionalScale
+        
         val rootLayout = FrameLayout(this).apply {
             setBackgroundColor(Color.parseColor("#CC000000"))
             setPadding(
-                (8 * size * resources.displayMetrics.density).toInt(),
-                (8 * size * resources.displayMetrics.density).toInt(),
-                (8 * size * resources.displayMetrics.density).toInt(),
-                (8 * size * resources.displayMetrics.density).toInt()
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (12 * effectiveSize * resources.displayMetrics.density).toInt()
             )
         }
         
         // Create traffic light container
         val trafficLightContainer = createTrafficLightView()
         val trafficLightLayoutParams = FrameLayout.LayoutParams(
-            (80 * size * resources.displayMetrics.density).toInt(),
-            (200 * size * resources.displayMetrics.density).toInt()
+            (100 * effectiveSize * resources.displayMetrics.density).toInt(),
+            (240 * effectiveSize * resources.displayMetrics.density).toInt()
         ).apply {
             gravity = Gravity.CENTER_VERTICAL or Gravity.START
-            marginEnd = (12 * size * resources.displayMetrics.density).toInt()
+            marginEnd = (16 * effectiveSize * resources.displayMetrics.density).toInt()
         }
         
         // Create timer
         timerText = TextView(this).apply {
             text = countdownSeconds.toString()
-            textSize = (20 * size).toFloat()
+            textSize = (24 * effectiveSize).toFloat()
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
             setBackgroundColor(Color.RED)
             setPadding(
-                (8 * size * resources.displayMetrics.density).toInt(),
-                (8 * size * resources.displayMetrics.density).toInt(),
-                (8 * size * resources.displayMetrics.density).toInt(),
-                (8 * size * resources.displayMetrics.density).toInt()
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (8 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (12 * effectiveSize * resources.displayMetrics.density).toInt(),
+                (8 * effectiveSize * resources.displayMetrics.density).toInt()
             )
         }
         
         val timerLayoutParams = FrameLayout.LayoutParams(
-            (60 * size * resources.displayMetrics.density).toInt(),
-            (50 * size * resources.displayMetrics.density).toInt()
+            (80 * effectiveSize * resources.displayMetrics.density).toInt(),
+            (60 * effectiveSize * resources.displayMetrics.density).toInt()
         ).apply {
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
         }
@@ -247,39 +253,47 @@ class SystemOverlayService : Service() {
     }
     
     private fun createTrafficLightView(): View {
+        val additionalScale = if (size <= 0.3f) 2.0f else (0.4f + (size * 0.6f))
+        val effectiveSize = size * additionalScale
+        
         val container = FrameLayout(this).apply {
-            setBackgroundColor(Color.parseColor("#FF555555"))
+            setBackgroundColor(Color.parseColor("#FF888888"))
         }
         
-        val lightSize = (32 * size * resources.displayMetrics.density).toInt()
-        val lightMargin = (8 * size * resources.displayMetrics.density).toInt()
+        // Larger light size for better visibility
+        val lightSize = (45 * effectiveSize * resources.displayMetrics.density).toInt()
+        val containerHeight = (240 * effectiveSize * resources.displayMetrics.density).toInt()
+        val verticalPadding = (20 * effectiveSize * resources.displayMetrics.density).toInt()
+        val availableHeight = containerHeight - (verticalPadding * 2)
+        val spacing = (availableHeight - (lightSize * 3)) / 2
         
-        // Create three lights
+        // Create three lights with inactive color initially
         redLight = View(this).apply {
-            background = createCircleDrawable(Color.parseColor("#FF555555"))
+            background = createCircleDrawable(Color.parseColor("#FF333333"))
         }
         
         yellowLight = View(this).apply {
-            background = createCircleDrawable(Color.parseColor("#FF555555"))
+            background = createCircleDrawable(Color.parseColor("#FF333333"))
         }
         
         greenLight = View(this).apply {
-            background = createCircleDrawable(Color.parseColor("#FF555555"))
+            background = createCircleDrawable(Color.parseColor("#FF333333"))
         }
         
-        // Position lights vertically
+        // Position lights vertically with equal spacing
         val redParams = FrameLayout.LayoutParams(lightSize, lightSize).apply {
             gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
-            topMargin = lightMargin
+            topMargin = verticalPadding
         }
         
         val yellowParams = FrameLayout.LayoutParams(lightSize, lightSize).apply {
-            gravity = Gravity.CENTER
+            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+            topMargin = verticalPadding + lightSize + spacing
         }
         
         val greenParams = FrameLayout.LayoutParams(lightSize, lightSize).apply {
-            gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-            bottomMargin = lightMargin
+            gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+            topMargin = verticalPadding + (lightSize * 2) + (spacing * 2)
         }
         
         container.addView(redLight, redParams)
@@ -340,7 +354,7 @@ class SystemOverlayService : Service() {
             else -> Color.RED
         }
         
-        val inactiveColor = Color.parseColor("#FF555555")
+        val inactiveColor = Color.parseColor("#FF333333")
         
         redLight.background = createCircleDrawable(if (currentColor == "red") activeColor else inactiveColor)
         yellowLight.background = createCircleDrawable(if (currentColor == "yellow") activeColor else inactiveColor)
@@ -351,19 +365,9 @@ class SystemOverlayService : Service() {
     }
     
     private fun updateOverlaySettings() {
-        overlayView?.alpha = transparency
-        
-        params?.let { p ->
-            val displayMetrics = resources.displayMetrics
-            val screenWidth = displayMetrics.widthPixels
-            val screenHeight = displayMetrics.heightPixels
-            
-            // Update position
-            p.x = (positionX * (screenWidth - (overlayView?.width ?: 0))).toInt()
-            p.y = (positionY * (screenHeight - (overlayView?.height ?: 0))).toInt()
-            
-            windowManager.updateViewLayout(overlayView, p)
-        }
+        // Remove current overlay and recreate with new settings
+        removeOverlay()
+        createSystemOverlay()
     }
     
     private fun removeOverlay() {
