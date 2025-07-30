@@ -143,21 +143,21 @@ class TrafficLightOverlayService : Service() {
         val additionalScale = 0.5f + (size * 0.4f) // Range: 0.5 to 0.9
         
         // Traffic light container: 120dp width + 8dp padding + 8dp margin = 136dp
-        val trafficLightWidth = (120 * displayMetrics.density * size * additionalScale + 16 * displayMetrics.density * size).toInt()
+        val trafficLightWidth = (120 * displayMetrics.density * size * additionalScale + 8 * displayMetrics.density * size).toInt()
         // Traffic light container: 360dp height + 8dp padding (top+bottom) = 368dp
-        val trafficLightHeight = (360 * displayMetrics.density * size * additionalScale + 8 * displayMetrics.density * size).toInt()
+        val trafficLightHeight = (320 * displayMetrics.density * size * additionalScale + 8 * displayMetrics.density * size).toInt()
         
         // Timer: 80dp width + 8dp margin = 88dp (but timer is centered vertically) - larger scale
         val timerCircleScale = 0.7f + (size * 0.25f) // Range: 0.7 to 0.95
-        val timerWidth = (80 * displayMetrics.density * size * additionalScale * timerCircleScale + 8 * displayMetrics.density * size).toInt()
+        val timerWidth = (80 * displayMetrics.density * size * additionalScale * timerCircleScale).toInt()
         val timerHeight = (80 * displayMetrics.density * size * additionalScale * timerCircleScale).toInt()
         
         // Total container size: traffic light + timer + root padding
-        val rootPadding = (16 * displayMetrics.density * size).toInt() // 8dp padding on both sides
+        val rootPadding = (8 * displayMetrics.density * size).toInt() // 8dp padding on both sides
         
         // Ensure timer width is never cut off - add extra padding for timer width
-        val timerWidthPadding = (8 * displayMetrics.density * size).toInt() // Extra padding for timer width
-        val scaledWidth = trafficLightWidth + timerWidth + timerWidthPadding + rootPadding
+        val timerWidthPadding = (4 * displayMetrics.density * size).toInt() // Extra padding for timer width
+        val scaledWidth = trafficLightWidth + rootPadding
         
         // Ensure timer is never hidden - add extra padding for timer
         val timerPadding = (16 * displayMetrics.density * size).toInt() // Extra padding for timer
@@ -264,25 +264,30 @@ class TrafficLightOverlayService : Service() {
             val trafficLightContainer = rootLayout.getChildAt(0) as ViewGroup
             val containerParams = trafficLightContainer.layoutParams
             containerParams.width = (120 * displayMetrics.density * size * additionalScale).toInt()
-            containerParams.height = (360 * displayMetrics.density * size * additionalScale).toInt()
+            containerParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             trafficLightContainer.layoutParams = containerParams
+            val padding = (4 * displayMetrics.density * size).toInt()
+            trafficLightContainer.setPadding(padding, padding, padding, padding)
         }
         
         // Scale individual traffic lights - make circles smaller
         val lightSize = (100 * displayMetrics.density * size * additionalScale * circleScale).toInt()
+        val lightMargin = (2 * displayMetrics.density * size).toInt()
         listOf(redLight, yellowLight, greenLight).forEach { light ->
-            val lightParams = light.layoutParams
+            val lightParams = light.layoutParams as ViewGroup.MarginLayoutParams
             lightParams.width = lightSize
             lightParams.height = lightSize
+            lightParams.setMargins(lightMargin, lightMargin, lightMargin, lightMargin)
             light.layoutParams = lightParams
         }
         
         // Scale timer text - make timer circle larger than other circles
         val timerCircleScale = 0.7f + (size * 0.25f) // Range: 0.7 to 0.95 (larger than circleScale)
         val timerSize = (80 * displayMetrics.density * size * additionalScale * timerCircleScale).toInt()
-        val timerParams = timerText.layoutParams
+        val timerParams = timerText.layoutParams as ViewGroup.MarginLayoutParams
         timerParams.width = timerSize
         timerParams.height = timerSize
+        timerParams.setMargins(0, 0, 0, 0)
         timerText.layoutParams = timerParams
         
         // Scale text size - slightly larger text too
