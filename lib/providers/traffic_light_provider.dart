@@ -7,6 +7,7 @@ import '../models/event_log.dart';
 import '../services/connection_service.dart';
 import '../services/notification_service.dart';
 import '../services/event_log_service.dart';
+import '../services/system_overlay_service.dart';
 import '../providers/settings_provider.dart';
 
 class TrafficLightProvider extends ChangeNotifier {
@@ -65,6 +66,7 @@ class TrafficLightProvider extends ChangeNotifier {
     }
 
     // Always update global overlay manager with new state
+    _updateSystemOverlay(newState);
 
     notifyListeners();
   }
@@ -156,6 +158,7 @@ class TrafficLightProvider extends ChangeNotifier {
         
         _currentState = updatedState;
         // Update global overlay manager with countdown changes
+        _updateSystemOverlay(updatedState);
         notifyListeners();
       }
     });
@@ -186,6 +189,8 @@ class TrafficLightProvider extends ChangeNotifier {
       _currentState = TrafficLightState(
         currentColor: color,
         timestamp: DateTime.now(),
+        countdownSeconds: _currentState.countdownSeconds,
+        recognizedSigns: _currentState.recognizedSigns,
       );
       
       _eventLogService.addEvent(EventLog.userAction(
@@ -193,7 +198,20 @@ class TrafficLightProvider extends ChangeNotifier {
         message: 'Manual overlay test: ${color.name}',
       ));
       
+      _updateSystemOverlay(_currentState);
       notifyListeners();
+    }
+  }
+
+  void _updateSystemOverlay(TrafficLightState state) async {
+    // Check if overlay is enabled and service is running
+    if (_settingsProvider.settings.overlayEnabled && SystemOverlayService.isServiceRunning) {
+      try {
+        await SystemOverlayService.updateOverlayState(state);
+        debugPrint('TrafficLightProvider: Updated overlay state - ${state.currentColor}, ${state.countdownSeconds}');
+      } catch (e) {
+        debugPrint('TrafficLightProvider: Failed to update overlay: $e');
+      }
     }
   }
 
