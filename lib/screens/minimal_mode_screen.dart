@@ -44,6 +44,7 @@ class MinimalModeScreen extends StatelessWidget {
                               state: trafficProvider.currentState,
                               isMinimalistic: true,
                               showCountdown: false,
+                              isDemoMode: trafficProvider.demoMode,
                             ),
                           ),
                         ),

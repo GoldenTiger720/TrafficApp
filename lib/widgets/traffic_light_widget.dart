@@ -9,6 +9,7 @@ class TrafficLightWidget extends StatefulWidget {
   final bool isMinimalistic;
   final bool showCountdown;
   final bool showSigns;
+  final bool isDemoMode;
   final VoidCallback? onLongPress;
   final VoidCallback? onDoubleTap;
 
@@ -18,6 +19,7 @@ class TrafficLightWidget extends StatefulWidget {
     this.isMinimalistic = false,
     this.showCountdown = true,
     this.showSigns = true,
+    this.isDemoMode = false,
     this.onLongPress,
     this.onDoubleTap,
   });
@@ -88,13 +90,26 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   }
 
   Color _getCurrentLightColor() {
-    switch (widget.state.currentColor) {
-      case TrafficLightColor.red:
-        return TrafficLightColors.vividRed;
-      case TrafficLightColor.yellow:
-        return TrafficLightColors.vividYellow;
-      case TrafficLightColor.green:
-        return TrafficLightColors.vividGreen;
+    if (widget.isDemoMode) {
+      // Use extra bright colors for demo mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.brightRed;
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.brightYellow;
+        case TrafficLightColor.green:
+          return TrafficLightColors.brightGreen;
+      }
+    } else {
+      // Use vivid colors for normal mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.vividRed;
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.vividYellow;
+        case TrafficLightColor.green:
+          return TrafficLightColors.vividGreen;
+      }
     }
   }
 
@@ -364,13 +379,26 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   }
 
   Color _getStatusColor() {
-    switch (widget.state.currentColor) {
-      case TrafficLightColor.red:
-        return TrafficLightColors.vividRed;
-      case TrafficLightColor.yellow:
-        return TrafficLightColors.vividYellow;
-      case TrafficLightColor.green:
-        return TrafficLightColors.vividGreen;
+    if (widget.isDemoMode) {
+      // Use extra bright colors for demo mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.brightRed;
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.brightYellow;
+        case TrafficLightColor.green:
+          return TrafficLightColors.brightGreen;
+      }
+    } else {
+      // Use vivid colors for normal mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.vividRed;
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.vividYellow;
+        case TrafficLightColor.green:
+          return TrafficLightColors.vividGreen;
+      }
     }
   }
 
@@ -1244,24 +1272,50 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
   }
 
   Color _getTimerColor() {
-    switch (widget.state.currentColor) {
-      case TrafficLightColor.red:
-        return TrafficLightColors.vividRed.withOpacity(0.8);
-      case TrafficLightColor.yellow:
-        return TrafficLightColors.vividYellow.withOpacity(0.8);
-      case TrafficLightColor.green:
-        return TrafficLightColors.vividGreen.withOpacity(0.8);
+    if (widget.isDemoMode) {
+      // Use extra bright colors for demo mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.brightRed.withOpacity(0.8);
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.brightYellow.withOpacity(0.8);
+        case TrafficLightColor.green:
+          return TrafficLightColors.brightGreen.withOpacity(0.8);
+      }
+    } else {
+      // Use vivid colors for normal mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.vividRed.withOpacity(0.8);
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.vividYellow.withOpacity(0.8);
+        case TrafficLightColor.green:
+          return TrafficLightColors.vividGreen.withOpacity(0.8);
+      }
     }
   }
 
   Color _getTimerBorderColor() {
-    switch (widget.state.currentColor) {
-      case TrafficLightColor.red:
-        return TrafficLightColors.vividRed;
-      case TrafficLightColor.yellow:
-        return TrafficLightColors.vividYellow;
-      case TrafficLightColor.green:
-        return TrafficLightColors.vividGreen;
+    if (widget.isDemoMode) {
+      // Use extra bright colors for demo mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.brightRed;
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.brightYellow;
+        case TrafficLightColor.green:
+          return TrafficLightColors.brightGreen;
+      }
+    } else {
+      // Use vivid colors for normal mode
+      switch (widget.state.currentColor) {
+        case TrafficLightColor.red:
+          return TrafficLightColors.vividRed;
+        case TrafficLightColor.yellow:
+          return TrafficLightColors.vividYellow;
+        case TrafficLightColor.green:
+          return TrafficLightColors.vividGreen;
+      }
     }
   }
 
@@ -1269,19 +1323,38 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
     Color lightColor;
     Color shadowColor;
 
-    switch (color) {
-      case TrafficLightColor.red:
-        lightColor = isActive ? Colors.red : Colors.red.withOpacity(0.3);
-        shadowColor = isActive ? TrafficLightColors.vividRed.withOpacity(0.6) : Colors.transparent;
-        break;
-      case TrafficLightColor.yellow:
-        lightColor = isActive ? Colors.amber : Colors.amber.withOpacity(0.3);
-        shadowColor = isActive ? TrafficLightColors.vividYellow.withOpacity(0.6) : Colors.transparent;
-        break;
-      case TrafficLightColor.green:
-        lightColor = isActive ? Colors.green : Colors.green.withOpacity(0.3);
-        shadowColor = isActive ? TrafficLightColors.vividGreen.withOpacity(0.6) : Colors.transparent;
-        break;
+    if (widget.isDemoMode) {
+      // Use extra bright colors for demo mode
+      switch (color) {
+        case TrafficLightColor.red:
+          lightColor = isActive ? TrafficLightColors.brightRed : TrafficLightColors.brightRed.withOpacity(0.3);
+          shadowColor = isActive ? TrafficLightColors.brightRed.withOpacity(0.8) : Colors.transparent;
+          break;
+        case TrafficLightColor.yellow:
+          lightColor = isActive ? TrafficLightColors.brightYellow : TrafficLightColors.brightYellow.withOpacity(0.3);
+          shadowColor = isActive ? TrafficLightColors.brightYellow.withOpacity(0.8) : Colors.transparent;
+          break;
+        case TrafficLightColor.green:
+          lightColor = isActive ? TrafficLightColors.brightGreen : TrafficLightColors.brightGreen.withOpacity(0.3);
+          shadowColor = isActive ? TrafficLightColors.brightGreen.withOpacity(0.8) : Colors.transparent;
+          break;
+      }
+    } else {
+      // Use vivid colors for normal mode
+      switch (color) {
+        case TrafficLightColor.red:
+          lightColor = isActive ? TrafficLightColors.vividRed : TrafficLightColors.vividRed.withOpacity(0.3);
+          shadowColor = isActive ? TrafficLightColors.vividRed.withOpacity(0.6) : Colors.transparent;
+          break;
+        case TrafficLightColor.yellow:
+          lightColor = isActive ? TrafficLightColors.vividYellow : TrafficLightColors.vividYellow.withOpacity(0.3);
+          shadowColor = isActive ? TrafficLightColors.vividYellow.withOpacity(0.6) : Colors.transparent;
+          break;
+        case TrafficLightColor.green:
+          lightColor = isActive ? TrafficLightColors.vividGreen : TrafficLightColors.vividGreen.withOpacity(0.3);
+          shadowColor = isActive ? TrafficLightColors.vividGreen.withOpacity(0.6) : Colors.transparent;
+          break;
+      }
     }
 
     return Container(
@@ -1293,8 +1366,8 @@ class _TrafficLightWidgetState extends State<TrafficLightWidget>
         boxShadow: isActive ? [
           BoxShadow(
             color: shadowColor,
-            blurRadius: 20,
-            spreadRadius: 5,
+            blurRadius: widget.isDemoMode ? 30 : 20, // Increased glow for demo mode
+            spreadRadius: widget.isDemoMode ? 8 : 5, // Increased spread for demo mode
           ),
         ] : null,
       ),

@@ -95,6 +95,7 @@ class _MainScreenState extends State<MainScreen> {
                           state: trafficProvider.currentState,
                           isMinimalistic: true,
                           showCountdown: false,
+                          isDemoMode: trafficProvider.demoMode,
                           onLongPress: () => _navigateToMinimalMode(context),
                           onDoubleTap: () => _openDetailView(context),
                         ),
