@@ -142,7 +142,7 @@ class _MainScreenState extends State<MainScreen> {
                                 Text(
                                   _getSignalStatusText(trafficProvider.currentState.currentColor),
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 10,
                                     fontWeight: FontWeight.bold,
                                     color: _getSignalTextColor(trafficProvider.currentState.currentColor),
                                   ),
