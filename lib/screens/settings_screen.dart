@@ -153,13 +153,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     (value) => settingsProvider.updateLanguage(value!),
                     itemBuilder: (lang) => Text(_getLanguageDisplayName(lang)),
                   ),
-                  _buildDropdownTile<DisplayMode>(
-                    AppLocalizations.of(context)?.displayMode ?? 'Display Mode',
-                    settings.displayMode,
-                    DisplayMode.values,
-                    (value) => settingsProvider.updateDisplayMode(value!),
-                    itemBuilder: (mode) => Text(_getDisplayModeDisplayName(mode, context)),
-                  ),
                 ],
               ),
               _buildSection(
